@@ -1369,3 +1369,11 @@ header label {
 .post-content figure.highlight figcaption {
   text-align: left;
 }
+.footer {
+  height: 3rem;
+  line-height: 1.2rem;
+}
+.gt-container {
+  max-width: 780px;
+  margin: auto;
+}
