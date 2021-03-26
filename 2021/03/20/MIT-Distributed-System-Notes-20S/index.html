@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Carl">
+
+
+
+
+
+<title>MIT-Distributed-System-Notes-20S | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Carl&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Carl&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">MIT-Distributed-System-Notes-20S</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Carl</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 20, 2021&nbsp;&nbsp;20:39:42</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><a target="_blank" rel="noopener" href="http://nil.csail.mit.edu/6.824/2020/schedule.html">Course Schedule - 2020 Spring</a></p>
+<blockquote>
+<p>** Performance</p>
+<p>** Fault Tolerance  – 高容错 &lt;=&gt; clusters中总会随时有instnace发生错误 e.g.,断电 无响应…</p>
+<ul>
+<li><p>Availability </p>
+<blockquote>
+<p>Goal：在有一定量错误的情况下，整个system不会crash，还能正常运行</p>
+</blockquote>
+</li>
+<li><p>Recoverability</p>
+<blockquote>
+<p>Goal：监听，如果错误数量大于一个阈值就停止工作，但在一定数量错误被解决后可恢复工作</p>
+<p>Howto：</p>
+<pre><code>     + NV Storage 比如flash、硬盘    
+     +  Replication机制 比如Raft，维护超过一个随时都**identical** 的副本
+</code></pre>
+</blockquote>
+</li>
+</ul>
+<p>** Consistency</p>
+<ul>
+<li>Strong Cons – too expensive</li>
+<li>Weak Cons</li>
+</ul>
+</blockquote>
+<h1 id="LEC-1-Intros"><a href="#LEC-1-Intros" class="headerlink" title="LEC 1 Intros"></a>LEC 1 Intros</h1><ul>
+<li><p>课前Paper：<a href="/Users/carl/Desktop/proj/MIT-Distributed-System/Papers/MapReduce2004.pdf">MapReduce from Google in 2004</a></p>
+</li>
+<li><p>讲义：<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/notes/l01.txt">https://pdos.csail.mit.edu/6.824/notes/l01.txt</a></p>
+  <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br></pre></td><td class="code"><pre><span class="line">6.824 2021 Lecture 1: Introduction</span><br><span class="line"></span><br><span class="line">6.824: Distributed Systems Engineering</span><br><span class="line"></span><br><span class="line">What is a distributed system?</span><br><span class="line">  multiple cooperating computers</span><br><span class="line">  storage for big web sites, MapReduce, peer-to-peer sharing, &amp;c</span><br><span class="line">  lots of critical infrastructure is distributed</span><br><span class="line"></span><br><span class="line">Why do people build distributed systems?</span><br><span class="line">  to increase capacity via parallelism</span><br><span class="line">  to tolerate faults via replication</span><br><span class="line">  to place computing physically close to external entities</span><br><span class="line">  to achieve security via isolation</span><br><span class="line"></span><br><span class="line">But:</span><br><span class="line">  many concurrent parts, complex interactions</span><br><span class="line">  must cope with partial failure</span><br><span class="line">  tricky to realize performance potential</span><br><span class="line"></span><br><span class="line">Why take this course?</span><br><span class="line">  interesting -- hard problems, powerful solutions</span><br><span class="line">  used by real systems -- driven by the rise of big Web sites</span><br><span class="line">  active research area -- important unsolved problems</span><br><span class="line">  hands-on -- you&#x27;ll build real systems in the labs</span><br><span class="line"></span><br><span class="line">COURSE STRUCTURE</span><br><span class="line"></span><br><span class="line">http://pdos.csail.mit.edu/6.824</span><br><span class="line"></span><br><span class="line">Course staff:</span><br><span class="line">  Frans Kaashoek, lecturer</span><br><span class="line">  Lily Tsai, TA</span><br><span class="line">  Cel Skeggs, TA</span><br><span class="line">  David Morejon, TA</span><br><span class="line">  Jose Javier Gonzalez, TA  </span><br><span class="line"></span><br><span class="line">Course components:</span><br><span class="line">  lectures</span><br><span class="line">  papers</span><br><span class="line">  two exams</span><br><span class="line">  labs</span><br><span class="line">  final project (optional)</span><br><span class="line"></span><br><span class="line">Lectures:</span><br><span class="line">  big ideas, paper discussion, and labs</span><br><span class="line">  will be video-taped, available online</span><br><span class="line"></span><br><span class="line">Papers:</span><br><span class="line">  research papers, some classic, some new</span><br><span class="line">  problems, ideas, implementation details, evaluation</span><br><span class="line">  many lectures focus on papers</span><br><span class="line">  please read papers before class!</span><br><span class="line">  each paper has a short question for you to answer</span><br><span class="line">  and we ask you to send us a question you have about the paper</span><br><span class="line">  submit question&amp;answer before start of lecture</span><br><span class="line"></span><br><span class="line">Exams:</span><br><span class="line">  Mid-term exam in class</span><br><span class="line">  Final exam during finals week</span><br><span class="line">  Mostly about papers and labs</span><br><span class="line"></span><br><span class="line">Labs:</span><br><span class="line">  goal: deeper understanding of some important techniques</span><br><span class="line">  goal: experience with distributed programming</span><br><span class="line">  first lab is due a week from Friday</span><br><span class="line">  one per week after that for a while</span><br><span class="line"></span><br><span class="line">Lab 1: MapReduce</span><br><span class="line">Lab 2: replication for fault-tolerance using Raft</span><br><span class="line">Lab 3: fault-tolerant key/value store</span><br><span class="line">Lab 4: sharded key/value store</span><br><span class="line"></span><br><span class="line">Optional final project at the end, in groups of 2 or 3.</span><br><span class="line">  The final project substitutes for Lab 4.</span><br><span class="line">  You think of a project and clear it with us.</span><br><span class="line">  Code, short write-up, short demo on last day.</span><br><span class="line"></span><br><span class="line">Lab grades depend on how many test cases you pass</span><br><span class="line">  we give you the tests, so you know whether you&#x27;ll do well</span><br><span class="line"></span><br><span class="line">Debugging the labs can be time-consuming</span><br><span class="line">  start early</span><br><span class="line">  come to TA office hours</span><br><span class="line">  ask questions on Piazza</span><br><span class="line"></span><br><span class="line">MAIN TOPICS</span><br><span class="line"></span><br><span class="line">This is a course about infrastructure for applications.</span><br><span class="line"><span class="bullet">  *</span> Storage.</span><br><span class="line"><span class="bullet">  *</span> Communication.</span><br><span class="line"><span class="bullet">  *</span> Computation.</span><br><span class="line"></span><br><span class="line">The big goal: abstractions that hide the complexity of distribution.</span><br><span class="line">  A couple of topics will come up repeatedly in our search.</span><br><span class="line"></span><br><span class="line">Topic: fault tolerance</span><br><span class="line">  1000s of servers, big network -&gt; always something broken</span><br><span class="line"><span class="code">    We&#x27;d like to hide these failures from the application.</span></span><br><span class="line"><span class="code">  We often want:</span></span><br><span class="line"><span class="code">    Availability -- app can make progress despite failures</span></span><br><span class="line"><span class="code">    Recoverability -- app will come back to life when failures are repaired</span></span><br><span class="line"><span class="code">  Big idea: replicated servers.</span></span><br><span class="line"><span class="code">    If one server crashes, can proceed using the other(s).</span></span><br><span class="line"><span class="code">    Very hard to get right</span></span><br><span class="line"><span class="code">      server may not have crashed, but just unreachable for some</span></span><br><span class="line"><span class="code">        but still serving requests from clients</span></span><br><span class="line"><span class="code">    Labs 1, 2 and 3</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Topic: consistency</span></span><br><span class="line"><span class="code">  General-purpose infrastructure needs well-defined behavior.</span></span><br><span class="line"><span class="code">    E.g. &quot;Get(k) yields the value from the most recent Put(k,v).&quot;</span></span><br><span class="line"><span class="code">  Achieving good behavior is hard!</span></span><br><span class="line"><span class="code">    &quot;Replica&quot; servers are hard to keep identical.</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Topic: performance</span></span><br><span class="line"><span class="code">  The goal: scalable throughput</span></span><br><span class="line"><span class="code">    Nx servers -&gt; Nx total throughput via parallel CPU, disk, net.</span></span><br><span class="line"><span class="code">  Scaling gets harder as N grows:</span></span><br><span class="line"><span class="code">    Load im-balance, stragglers, slowest-of-N latency.</span></span><br><span class="line"><span class="code">    Non-parallelizable code: initialization, interaction.</span></span><br><span class="line"><span class="code">    Bottlenecks from shared resources, e.g. network.</span></span><br><span class="line"><span class="code">  Some performance problems aren&#x27;t easily solved by scaling</span></span><br><span class="line"><span class="code">    e.g. quick response time for a single user request</span></span><br><span class="line"><span class="code">    e.g. all users want to update the same data</span></span><br><span class="line"><span class="code">    often requires better design rather than just more computers</span></span><br><span class="line"><span class="code">  Lab 4</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Topic: Fault-tolerance, consistency, and performance are enemies.</span></span><br><span class="line"><span class="code">  Strong fault tolerance requires communication</span></span><br><span class="line"><span class="code">    e.g., send data to backup</span></span><br><span class="line"><span class="code">  Strong consistency requires communication,</span></span><br><span class="line"><span class="code">    e.g. Get() must check for a recent Put().</span></span><br><span class="line"><span class="code">  Many designs provide only weak consistency, to gain speed.</span></span><br><span class="line"><span class="code">    e.g. Get() does *not* yield the latest Put()!</span></span><br><span class="line"><span class="code">    Painful for application programmers but may be a good trade-off.</span></span><br><span class="line"><span class="code">  Many design points are possible in the consistency/performance spectrum!</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Topic: implementation</span></span><br><span class="line"><span class="code">  RPC, threads, concurrency control.</span></span><br><span class="line"><span class="code">  The labs...</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">HISTORICAL CONTEXT</span></span><br><span class="line"><span class="code">  Local-area networks and Internet apps (since 1980s)</span></span><br><span class="line"><span class="code">    10-100s machines: AFS</span></span><br><span class="line"><span class="code">    Internet-scale apps: DNS and Email</span></span><br><span class="line"><span class="code">  Data centers (late 1990s/early 2000s)</span></span><br><span class="line"><span class="code">    Web sites with many users (many millions) and much data</span></span><br><span class="line"><span class="code">      Google, Yahoo, Facebook, Amazon, Microsoft, etc.</span></span><br><span class="line"><span class="code">      Early apps: web search, email, shopping, etc.</span></span><br><span class="line"><span class="code">    Explosion of cool and interesting systems</span></span><br><span class="line"><span class="code">      &gt; 1000s of machines</span></span><br><span class="line"><span class="code">      Systems mostly for internal use, engineers wrote research papers about them</span></span><br><span class="line"><span class="code">  Cloud computing</span></span><br><span class="line"><span class="code">    Users outsourcing computation/storage to cloud providers</span></span><br><span class="line"><span class="code">    Users run their own big web sites on clouds</span></span><br><span class="line"><span class="code">    Users run large computations of lots of data (e.g., machine learning)</span></span><br><span class="line"><span class="code">    =&gt; Much new user-facing distributed systems infrastructure</span></span><br><span class="line"><span class="code">  Current state: very active area of research and development in academia and industry</span></span><br><span class="line"><span class="code">    Hard to keep up with!</span></span><br><span class="line"><span class="code">      Some systems in the 6.824 papers are dated, but concepts are still relevant</span></span><br><span class="line"><span class="code">    6.824: heavy on fault-tolerance/storage</span></span><br><span class="line"><span class="code">      but touches on communication and computation too</span></span><br><span class="line"><span class="code">      </span></span><br><span class="line"><span class="code">CASE STUDY: MapReduce</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Let&#x27;s talk about MapReduce (MR) as a case study</span></span><br><span class="line"><span class="code">  a good illustration of 6.824&#x27;s main topics</span></span><br><span class="line"><span class="code">  hugely influential</span></span><br><span class="line"><span class="code">  the focus of Lab 1</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">MapReduce overview</span></span><br><span class="line"><span class="code">  context: multi-hour computations on multi-terabyte data-sets</span></span><br><span class="line"><span class="code">    e.g. build search index, or sort, or analyze structure of web</span></span><br><span class="line"><span class="code">    only practical with 1000s of computers</span></span><br><span class="line"><span class="code">    applications not written by distributed systems experts</span></span><br><span class="line"><span class="code">  overall goal: easy for non-specialist programmers</span></span><br><span class="line"><span class="code">  programmer just defines Map and Reduce functions</span></span><br><span class="line"><span class="code">    often fairly simple sequential code</span></span><br><span class="line"><span class="code">  MR takes care of, and hides, all aspects of distribution!</span></span><br><span class="line"><span class="code">  </span></span><br><span class="line"><span class="code">Abstract view of a MapReduce job</span></span><br><span class="line"><span class="code">  input is (already) split into M files</span></span><br><span class="line"><span class="code">  Input1 -&gt; Map -&gt; a,1 b,1</span></span><br><span class="line"><span class="code">  Input2 -&gt; Map -&gt;     b,1</span></span><br><span class="line"><span class="code">  Input3 -&gt; Map -&gt; a,1     c,1</span></span><br><span class="line"><span class="code">                    |   |   |</span></span><br><span class="line"><span class="code">                    |   |   -&gt; Reduce -&gt; c,1</span></span><br><span class="line"><span class="code">                    |   -----&gt; Reduce -&gt; b,2</span></span><br><span class="line"><span class="code">                    ---------&gt; Reduce -&gt; a,2</span></span><br><span class="line"><span class="code">  MR calls Map() for each input file, produces set of k2,v2</span></span><br><span class="line"><span class="code">    &quot;intermediate&quot; data</span></span><br><span class="line"><span class="code">    each Map() call is a &quot;task&quot;</span></span><br><span class="line"><span class="code">  MR gathers all intermediate v2&#x27;s for a given k2,</span></span><br><span class="line"><span class="code">    and passes each key + values to a Reduce call</span></span><br><span class="line"><span class="code">  final output is set of &lt;k2,v3&gt; pairs from Reduce()s</span></span><br><span class="line"><span class="code"># 补充： 1&gt; Input和Output都是Files（GFS中， 不超过64mb的chunks）</span></span><br><span class="line"><span class="code">#				2&gt; Input File &lt;k1,v1&gt; -&gt; Map() -&gt; list(&lt;k2,v2&gt;) ##  intermediate key</span></span><br><span class="line"><span class="code">#				3&gt; The **COLLECTER** of MR 收集所有Map中的所有同K 分发给Reduce()</span></span><br><span class="line"><span class="code">#   		4&gt; list(&lt;k2,v2&gt;) -&gt; Reduce() -&gt; &lt;k2,v3&gt; -&gt; GFS(Output File)</span></span><br><span class="line"><span class="code">				</span></span><br><span class="line"><span class="code">Example: word count</span></span><br><span class="line"><span class="code">  input is thousands of text files</span></span><br><span class="line"><span class="code">  Map(k, v)</span></span><br><span class="line"><span class="code">    split v into words</span></span><br><span class="line"><span class="code">    for each word w</span></span><br><span class="line"><span class="code">      emit(w, &quot;1&quot;)</span></span><br><span class="line"><span class="code">  Reduce(k, v)</span></span><br><span class="line"><span class="code">    emit(len(v))</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">MapReduce scales well:</span></span><br><span class="line"><span class="code">  N &quot;worker&quot; computers get you Nx throughput.</span></span><br><span class="line"><span class="code">    Maps()s can run in parallel, since they don&#x27;t interact.</span></span><br><span class="line"><span class="code">    Same for Reduce()s.</span></span><br><span class="line"><span class="code">  **So you can get more throughput by buying more computers.**</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">MapReduce hides many details:</span></span><br><span class="line"><span class="code">  sending app code to servers</span></span><br><span class="line"><span class="code">  tracking which tasks are done</span></span><br><span class="line"><span class="code">  moving data from Maps to Reduces</span></span><br><span class="line"><span class="code">  balancing load over servers</span></span><br><span class="line"><span class="code">  recovering from failures</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">However, MapReduce limits what apps can do:</span></span><br><span class="line"><span class="code">  No interaction or state (other than via intermediate output).</span></span><br><span class="line"><span class="code">  No iteration, no multi-stage pipelines.</span></span><br><span class="line"><span class="code">  No real-time or streaming processing.</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Input and output are stored on the GFS cluster file system</span></span><br><span class="line"><span class="code">  MR needs huge parallel input and output throughput.</span></span><br><span class="line"><span class="code">  GFS splits files over many servers, in 64 MB chunks</span></span><br><span class="line"><span class="code">    Maps read in parallel</span></span><br><span class="line"><span class="code">    Reduces write in parallel</span></span><br><span class="line"><span class="code">  GFS also replicates each file on 2 or 3 servers</span></span><br><span class="line"><span class="code">  Having GFS is a big win for MapReduce</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">What will likely limit the performance?</span></span><br><span class="line"><span class="code">  We care since that&#x27;s the thing to optimize.</span></span><br><span class="line"><span class="code">  CPU? memory? disk? network?</span></span><br><span class="line"><span class="code">  In 2004 authors were limited by network capacity.</span></span><br><span class="line"><span class="code">    What does MR send over the network?</span></span><br><span class="line"><span class="code">      Maps read input from GFS.</span></span><br><span class="line"><span class="code">      Reduces read Map output.</span></span><br><span class="line"><span class="code">        Can be as large as input, e.g. for sorting.</span></span><br><span class="line"><span class="code">      Reduces write output files to GFS.</span></span><br><span class="line"><span class="code">    [diagram: servers, tree of network switches]</span></span><br><span class="line"><span class="code">    In MR&#x27;s all-to-all shuffle, half of traffic goes through root switch.</span></span><br><span class="line"><span class="code">    Paper&#x27;s root switch: 100 to 200 gigabits/second, total</span></span><br><span class="line"><span class="code">      1800 machines, so 55 megabits/second/machine.</span></span><br><span class="line"><span class="code">      55 is small, e.g. much less than disk or RAM speed.</span></span><br><span class="line"><span class="code">  Today: networks and root switches are much faster relative to CPU/disk.</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Some details (paper&#x27;s Figure 1):</span></span><br><span class="line"><span class="code">  one coordinator, that hands out tasks to workers and remembers progress.</span></span><br><span class="line"><span class="code">  1. coordinator gives Map tasks to workers until all Maps complete</span></span><br><span class="line"><span class="code">     *** Maps write output (intermediate data) to local disk ***</span></span><br><span class="line"><span class="code">     *** Maps split output, by hash, into one file per Reduce task ***</span></span><br><span class="line"><span class="code">  2. after all Maps have finished, coordinator hands out Reduce tasks</span></span><br><span class="line"><span class="code">     each Reduce fetches its intermediate output from (all) Map workers</span></span><br><span class="line"><span class="code">     each Reduce task writes a separate output file on GFS</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">How does MR minimize network use?</span></span><br><span class="line"><span class="code">  Coordinator tries to run each Map task on GFS server that stores its input.</span></span><br><span class="line"><span class="code">    All computers run both GFS and MR workers</span></span><br><span class="line"><span class="code">    So input is read from local disk (via GFS), not over network.</span></span><br><span class="line"><span class="code">  Intermediate data goes over network just once.</span></span><br><span class="line"><span class="code">    Map worker writes to local disk.</span></span><br><span class="line"><span class="code">    Reduce workers read directly from Map workers, not via GFS.</span></span><br><span class="line"><span class="code">  Intermediate data partitioned into files holding many keys.</span></span><br><span class="line"><span class="code">    R is much smaller than the number of keys.</span></span><br><span class="line"><span class="code">    Big network transfers are more efficient.</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">How does MR get good load balance?</span></span><br><span class="line"><span class="code">  Wasteful and slow if N-1 servers have to wait for 1 slow server to finish.</span></span><br><span class="line"><span class="code">  But some tasks likely take longer than others.</span></span><br><span class="line"><span class="code">  Solution: many more tasks than workers.</span></span><br><span class="line"><span class="code">    Coordinator hands out new tasks to workers who finish previous tasks.</span></span><br><span class="line"><span class="code">    So no task is so big it dominates completion time (hopefully).</span></span><br><span class="line"><span class="code">    So faster servers do more tasks than slower ones, finish abt the same time.</span></span><br><span class="line"><span class="code">#   能者多劳</span></span><br><span class="line"><span class="code">		</span></span><br><span class="line"><span class="code">What about fault tolerance?</span></span><br><span class="line"><span class="code">  I.e. what if a worker crashes during a MR job?</span></span><br><span class="line"><span class="code">  We want to completely hide failures from the application programmer!</span></span><br><span class="line"><span class="code">  Does MR have to re-run the whole job from the beginning?</span></span><br><span class="line"><span class="code">    Why not?</span></span><br><span class="line"><span class="code">  MR re-runs just the failed Map()s and Reduce()s.</span></span><br><span class="line"><span class="code">    Suppose MR runs a Map twice, one Reduce sees first run&#x27;s output,</span></span><br><span class="line"><span class="code">      another Reduce sees the second run&#x27;s output?</span></span><br><span class="line"><span class="code">    Correctness requires re-execution to yield exactly the same output.</span></span><br><span class="line"><span class="code">    So Map and Reduce must be pure **deterministic functions**:</span></span><br><span class="line"><span class="code">#     deterministic function: 确定性函数--&gt; 参数一旦给定 输出总identical</span></span><br><span class="line"><span class="code">      they are only allowed to look at their arguments.</span></span><br><span class="line"><span class="code">      **no state, no file I/O, no interaction, no external communication.**</span></span><br><span class="line"><span class="code">  What if you wanted to allow non-functional Map or Reduce?</span></span><br><span class="line"><span class="code">    Worker failure would require whole job to be re-executed,</span></span><br><span class="line"><span class="code">      or you&#x27;d need to create synchronized global checkpoints.</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Details of worker crash recovery:</span></span><br><span class="line"><span class="code">  * Map worker crashes:</span></span><br><span class="line"><span class="code">    coordinator notices worker no longer responds to pings</span></span><br><span class="line"><span class="code">    coordinator knows which Map tasks it ran on that worker</span></span><br><span class="line"><span class="code">      those tasks&#x27; intermediate output is now lost, must be re-created</span></span><br><span class="line"><span class="code">      coordinator tells other workers to run those tasks</span></span><br><span class="line"><span class="code">    can omit re-running if Reduces already fetched the intermediate data</span></span><br><span class="line"><span class="code">  * Reduce worker crashes.</span></span><br><span class="line"><span class="code">    finished tasks are OK -- stored in GFS, with replicas.</span></span><br><span class="line"><span class="code">    coordinator re-starts worker&#x27;s unfinished tasks on other workers.</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Other failures/problems:</span></span><br><span class="line"><span class="code">  * What if the coordinator gives two workers the same Map() task?</span></span><br><span class="line"><span class="code">    perhaps the coordinator incorrectly thinks one worker died.</span></span><br><span class="line"><span class="code">    it will tell Reduce workers about only one of them.</span></span><br><span class="line"><span class="code">  * What if the coordinator gives two workers the same Reduce() task?</span></span><br><span class="line"><span class="code">    they will both try to write the same output file on GFS!</span></span><br><span class="line"><span class="code">    atomic GFS rename prevents mixing; one complete file will be visible.</span></span><br><span class="line"><span class="code">  * What if a single worker is very slow -- a &quot;straggler&quot;?</span></span><br><span class="line"><span class="code">    perhaps due to flakey hardware.</span></span><br><span class="line"><span class="code">    coordinator starts a second copy of last few tasks.</span></span><br><span class="line"><span class="code">  * What if a worker computes incorrect output, due to broken h/w or s/w?</span></span><br><span class="line"><span class="code">    too bad! MR assumes &quot;fail-stop&quot; CPUs and software.</span></span><br><span class="line"><span class="code">  * What if the coordinator crashes?</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Current status?</span></span><br><span class="line"><span class="code">  Hugely influential (Hadoop, Spark, &amp;c).</span></span><br><span class="line"><span class="code">  Probably no longer in use at Google.</span></span><br><span class="line"><span class="code">    Replaced by Flume / FlumeJava (see paper by Chambers et al).</span></span><br><span class="line"><span class="code">    GFS replaced by Colossus (no good description), and BigTable.</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">Conclusion</span></span><br><span class="line"><span class="code">  MapReduce single-handedly made big cluster computation popular.</span></span><br><span class="line"><span class="code">  - Not the most efficient or flexible.</span></span><br><span class="line"><span class="code">  + Scales well.  **扩展性很强**</span></span><br><span class="line"><span class="code">  + Easy to program -- failures and data movement are hidden.**编码层面屏蔽了很多细节**</span></span><br><span class="line"><span class="code">  </span></span><br><span class="line"><span class="code">  These were good trade-offs in practice.</span></span><br><span class="line"><span class="code">  We&#x27;ll see some more advanced successors later in the course.</span></span><br><span class="line"><span class="code">  Have fun with the lab!</span></span><br></pre></td></tr></table></figure></li>
+<li><p>Why Distributed System(Huge Computer Clusters)?</p>
+<ul>
+<li><strong>Parallelism</strong></li>
+<li><strong>Less Tolerate Faults</strong></li>
+<li>Existing Physical Reasons</li>
+<li>Security Issues –&gt; Isolated</li>
+</ul>
+</li>
+<li><p>Why Distributed System is <strong>Challenging</strong></p>
+<ul>
+<li><p>Concurrency - large number</p>
+</li>
+<li><p>Partial Failure</p>
+</li>
+<li><p>Performance</p>
+<ul>
+<li><p>Scalability</p>
+<blockquote>
+<p>——”2倍数量的机器就能直接达到2倍的吞吐量吗？“</p>
+<p>——“<strong>NO</strong> 很多时候Bottleneck仍然不会解除” </p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Labs</p>
+<ul>
+<li><p>Lab1：MapReduce</p>
+</li>
+<li><p>Lab2：Raft算法</p>
+<blockquote>
+<p>一种实现tolerate faults的算法</p>
+</blockquote>
+</li>
+<li><p>Lab3：利用lab2 build a key-value server with  fault tolerant</p>
+</li>
+<li><p>Lab4: Sharding KV server </p>
+</li>
+</ul>
+</li>
+<li><p>Infra中的应用涉及</p>
+<ul>
+<li><strong>Storage</strong> – 广泛 直白</li>
+<li>Communication –通信</li>
+<li>Computation  –i.e., MapReduce</li>
+</ul>
+<blockquote>
+<p>** Implementions below：</p>
+<p>RPC  –&gt; 忽略网络链路不稳定的事实 </p>
+<p>threads</p>
+<p>concurrency - lock</p>
+</blockquote>
+</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Carl</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2021 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>My Heart is in the <strong>WORK</strong>  <br><i> - from <strong>Carnegie Mellon</strong></i></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Courses/"># Courses</a>
+                    
+                        <a href="/tags/System/"># System</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/03/18/ImgBlogTesting/">ImgBlogTesting</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+
+<!-- add git talk -->
+
+    <div id="gitalk-container"></div>
+    <script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script> 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '2cb4dd5456ba994168fe',
+        clientSecret: '66d8270f473a683bdc1a1ad00d6d1348b773047b',
+        repo: 'Carlwasinfected.github.io',
+        owner: 'Carlwasinfected',
+        admin: 'Carlwasinfected',
+        id: md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 15,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Carl | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a> 
+            <br>
+        
+            <!-- 增加站点统计查询 -->
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<span class="site-uv">
+    <i>Vistors:</i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>&nbsp;
+
+
+<span class="site-pv">
+    <i>Views:</i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+        </span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
