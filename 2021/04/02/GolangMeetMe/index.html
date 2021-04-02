@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Carl">
+
+
+
+
+
+<title>GolangMeetMe | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Carl&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Carl&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">GolangMeetMe</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Carl</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 2, 2021&nbsp;&nbsp;10:13:42</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="MyRoadToGopher"><a href="#MyRoadToGopher" class="headerlink" title="MyRoadToGopher"></a>MyRoadToGopher</h1><p>本文主要记录了学习 Golang 过程中一些心得，对于 Golang 底层机制、特性与一些语法糖的注解等等</p>
+<h2 id="一、Golang-Reflection"><a href="#一、Golang-Reflection" class="headerlink" title="一、Golang Reflection"></a>一、Golang Reflection</h2><blockquote>
+<p>Refs:</p>
+<pre><code>+ [Go reflection 三定律与最佳实践](https://halfrost.com/go_reflection/#toc-8)
++ [The Laws of Reflection](https://blog.golang.org/laws-of-reflection)
+</code></pre>
+</blockquote>
+<h3 id="1-反射是什么？"><a href="#1-反射是什么？" class="headerlink" title="1. 反射是什么？"></a>1. 反射是什么？</h3><p>At the basic level, reflection is just a <strong>mechanism</strong> to <strong>examine the type and value pair stored inside an interface variable</strong>. To get started, there are two types we need to know about in <a target="_blank" rel="noopener" href="https://golang.org/pkg/reflect/">package reflect</a>: <a target="_blank" rel="noopener" href="https://golang.org/pkg/reflect/#Type">Type</a> and <a target="_blank" rel="noopener" href="https://golang.org/pkg/reflect/#Value">Value</a>. Those two <strong>types</strong> give access to the contents of an interface variable, and two simple functions, called <code>reflect.TypeOf</code> and <code>reflect.ValueOf</code>, retrieve <code>reflect.Type</code> and <code>reflect.Value</code> pieces out of an interface value. (Also, from the <code>reflect.Value</code> it’s easy to get to the <code>reflect.Type</code>, but let’s keep the <code>Value</code> and <code>Type</code> concepts separate for now.)</p>
+<h3 id="2-反射三定律"><a href="#2-反射三定律" class="headerlink" title="2.反射三定律"></a>2.反射三定律</h3><blockquote>
+<h4 id="1-Reflection-goes-from-interface-value-to-reflection-object"><a href="#1-Reflection-goes-from-interface-value-to-reflection-object" class="headerlink" title="1. Reflection goes from interface value to reflection object."></a>1. Reflection goes from interface value to reflection object.</h4><h4 id="2-Reflection-goes-from-reflection-object-to-interface-value"><a href="#2-Reflection-goes-from-reflection-object-to-interface-value" class="headerlink" title="2. Reflection goes from reflection object to interface value."></a>2. Reflection goes from reflection object to interface value.</h4><h4 id="3-To-modify-a-reflection-object-the-value-must-be-settable"><a href="#3-To-modify-a-reflection-object-the-value-must-be-settable" class="headerlink" title="3. To modify a reflection object, the value must be settable."></a>3. To modify a reflection object, the value must be settable.</h4><p><img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/148_6_0.png" alt="img"></p>
+</blockquote>
+<p>上述的三条路径指明了反射对象(interface value)和 Value(对象类型信息与值的数据结构) 以及 Type(对象类型信息)的关系， 蓝色为完成转换所调用的API名。</p>
+<p>对于一个 interface value 实例，我们关心他所拥有的字段的值和数据类型。注意 Value 这个 reflection object 既包含了实例的类型又包含了类型，而 Type 则缺少字段的值。 因此，由Type =&gt; Interface 需要两步执行(1. New()   2.Interface() )   二者底层数据结构如下</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// **Tips ==&gt; Go中的struct与interface**</span></span><br><span class="line"><span class="comment">// Go中没有implement这样的关键字。 因此struct若实现了借口中的全部方法，则它一定是借口者</span></span><br><span class="line"><span class="comment">// 借口中只能有方法字段，不能有任何属性字段</span></span><br><span class="line"><span class="comment">// interface&#123;&#125; 被所有的struct所实现</span></span><br><span class="line"><span class="keyword">type</span> Type <span class="keyword">interface</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Value <span class="keyword">struct</span> &#123;</span><br><span class="line">   	<span class="comment">// typ 包含由值表示的值的类型。</span></span><br><span class="line">	typ *rtype   <span class="comment">// 即Type信息</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 指向值的指针，如果设置了 flagIndir，则是指向数据的指针。只有当设置了 flagIndir 或 typ.pointers（）为 true 时有效。</span></span><br><span class="line">	ptr unsafe.Pointer</span><br><span class="line"></span><br><span class="line">    <span class="comment">// flag(struct) 保存有关该值的元数据。最低位是标志位：</span></span><br><span class="line">	<span class="comment">//	- flagStickyRO: 通过未导出的未嵌入字段获取，因此为只读</span></span><br><span class="line">	<span class="comment">//	- flagEmbedRO:  通过未导出的嵌入式字段获取，因此为只读</span></span><br><span class="line">	<span class="comment">//	- flagIndir:    val保存指向数据的指针</span></span><br><span class="line">	<span class="comment">//	- flagAddr:     v.CanAddr 为 true (表示 flagIndir)</span></span><br><span class="line">	<span class="comment">//	- flagMethod:   v 是方法值。</span></span><br><span class="line">    <span class="comment">// 接下来的 5 个 bits 给出 Value 的 Kind 种类，除了方法 values 以外，它会重复 typ.Kind（）。其余 23 位以上给出方法 values 的方法编号。如果 flag.kind（）!= Func，代码可以假定 flagMethod 没有设置。如果 ifaceIndir(typ)，代码可以假定设置了 flagIndir。</span></span><br><span class="line">	flag   <span class="comment">// 继承（匿名字段）</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>若要修改反射对象，那么它的value必须是可修改的(settable)。这就要求我们在<code>TypeOf()</code>和<code>ValueOf()</code>时传入反射对象的地址，利用引用进行操作。不然传入的参数完全是<strong>值拷贝</strong>，达不到修改反射对象的需求。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> x <span class="keyword">float64</span> = <span class="number">3.4</span></span><br><span class="line">	v := reflect.ValueOf(x)</span><br><span class="line">	v.SetFloat(<span class="number">7.1</span>) <span class="comment">// Error: will panic.</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Fix: Line3 ==&gt;   v := reflect.ValueOf(&amp;x)</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-Kind-与relect-Type"><a href="#3-Kind-与relect-Type" class="headerlink" title="3. Kind()与relect.Type"></a>3. Kind()与relect.Type</h3><p>注意Kind()返回反射对象的基础数据类型,Type则是此类型的unique名称表示</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main  <span class="comment">// 包名</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;reflect&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ss <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name <span class="keyword">string</span></span><br><span class="line">	Age <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	t := ss&#123;<span class="string">&quot;Carl&quot;</span>, <span class="number">13</span>&#125;</span><br><span class="line">	fmt.Println(<span class="string">&quot;type:&quot;</span>, reflect.TypeOf(t))</span><br><span class="line">	fmt.Println(<span class="string">&quot;Kind:&quot;</span>, reflect.TypeOf(t).Kind())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Output:</span></span><br><span class="line"><span class="comment">// type: main.ss</span></span><br><span class="line"><span class="comment">// Kind: struct</span></span><br></pre></td></tr></table></figure>
+
+<p>需要注意Type中有些方法是某些数据类型<strong>专有</strong>的</p>
+<blockquote>
+<p>在不确定类型之前最好先调用 Kind() 方法确定具体类型再调用类型的专有方法，如果不匹配，会报错 panic</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="left">Kind</th>
+<th align="left">Methods applicable</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Int*</td>
+<td align="left">Bits</td>
+</tr>
+<tr>
+<td align="left">Uint*</td>
+<td align="left">Bits</td>
+</tr>
+<tr>
+<td align="left">Float*</td>
+<td align="left">Bits</td>
+</tr>
+<tr>
+<td align="left">Complex*</td>
+<td align="left">Bits</td>
+</tr>
+<tr>
+<td align="left">Array</td>
+<td align="left">Elem, Len</td>
+</tr>
+<tr>
+<td align="left">Chan</td>
+<td align="left">ChanDir, Elem</td>
+</tr>
+<tr>
+<td align="left">Func</td>
+<td align="left">In, NumIn, Out, NumOut, IsVariadic</td>
+</tr>
+<tr>
+<td align="left">Map</td>
+<td align="left">Key, Elem</td>
+</tr>
+<tr>
+<td align="left">Ptr</td>
+<td align="left">Elem</td>
+</tr>
+<tr>
+<td align="left">Slice</td>
+<td align="left">Elem</td>
+</tr>
+<tr>
+<td align="left">Struct</td>
+<td align="left">Field, FieldByIndex, FieldByName,FieldByNameFunc, NumField</td>
+</tr>
+</tbody></table>
+<h2 id="二、-Golang-OOD"><a href="#二、-Golang-OOD" class="headerlink" title="二、 Golang OOD"></a>二、 Golang OOD</h2><h3 id="1-interface-与-struct"><a href="#1-interface-与-struct" class="headerlink" title="1. interface 与 struct"></a>1. interface 与 struct</h3><p><a target="_blank" rel="noopener" href="https://halfrost.com/go_interface/#toc-3">https://halfrost.com/go_interface/#toc-3</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Carl</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2021 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>My Heart is in the <strong>WORK</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i> - from <strong>Andrew Carnegie</strong></i></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Golang/"># Golang</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/03/20/MIT-Distributed-System-Notes-20S/">MIT-Distributed-System-Notes-20S</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+
+<!-- add git talk -->
+
+    <div id="gitalk-container"></div>
+    <script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script> 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '2cb4dd5456ba994168fe',
+        clientSecret: '66d8270f473a683bdc1a1ad00d6d1348b773047b',
+        repo: 'Carlwasinfected.github.io',
+        owner: 'Carlwasinfected',
+        admin: 'Carlwasinfected',
+        id: md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 15,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Carl | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a> 
+            <br>
+        
+            <!-- 增加站点统计查询 -->
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<span class="site-uv">
+    <i>Vistors:</i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>&nbsp;
+
+
+<span class="site-pv">
+    <i>Views:</i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+        </span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
