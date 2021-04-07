@@ -270,11 +270,58 @@
 <li>Computation  –i.e., MapReduce</li>
 </ul>
 <blockquote>
-<p>** Implementions below：</p>
+<p>**Some Implementions  of  Distributed System below：</p>
 <p>RPC  –&gt; 忽略网络链路不稳定的事实 </p>
 <p>threads</p>
 <p>concurrency - lock</p>
 </blockquote>
+</li>
+</ul>
+<h2 id="LEC2-GO-amp-RPC"><a href="#LEC2-GO-amp-RPC" class="headerlink" title="LEC2 GO &amp; RPC"></a>LEC2 GO &amp; RPC</h2><ul>
+<li><p>Go是<em>类型安全</em>与<em>内存安全</em>的， Thread在Go中叫做<code>Goroutines</code></p>
+</li>
+<li><p>Multiple Threads 主要用在：</p>
+<ul>
+<li>I/O场景  =&gt; 高并发 <em>High Concurrency</em></li>
+<li>并行场景 =&gt; 多核CPU</li>
+<li>易用性 =&gt; MP框架中Master发送<code>ping</code>确认Worker Server是否存活</li>
+</ul>
+<blockquote>
+<p>an alternative way:  <em>event-driven programming</em></p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. write code that explicitly interleaves activities, in a single thread. Usually called &quot;event-driven.&quot;</span><br><span class="line">2. Keep a table of state about each activity, e.g. each client request.</span><br><span class="line"></span><br><span class="line">** Eliminates Thread Costs. But doesnot get multi-core speedup **</span><br></pre></td></tr></table></figure></blockquote>
+</blockquote>
+</li>
+<li><p>多线程中每个Thread都有自己独立的<code>程序计数器</code>、<code>寄存器</code>和<code>stack</code>，但实际都还是在同一个Process的地址空间SandBox里（即共享地址空间），只是逻辑上做了隔离。  每个Thread可以通过<em>共享内存</em>的方式读写进行交流，由此引出<em>各种同步问题</em></p>
+</li>
+<li><p>Threads Challenges:</p>
+<ul>
+<li><p>共享数据</p>
+<blockquote>
+<p>高并发下多个线程对于同一内存地址写， 导致<code>Race</code> </p>
+<p>common solutions  =&gt; <strong>加锁</strong> 例如Go中的<code>mu.Lock() xxxx//some codes mu.Unlock()  </code></p>
+</blockquote>
+</li>
+<li><p>互相协作 Coordination</p>
+<blockquote>
+<p>想象一个生产者消费者模型「2个线程」 如何通信？</p>
+<blockquote>
+<ul>
+<li>how can the consumer wait (and release the CPU)?<ul>
+<li> how can the producer wake up the consumer?</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>==&gt; use <code>Go channels</code> or <code>sync.Cond</code> or <code>WaitGroup</code></p>
+</blockquote>
+</li>
+<li><p>死锁</p>
+<blockquote>
+<p>Threads之前请求Lock的关系成环</p>
+</blockquote>
+</li>
+</ul>
 </li>
 </ul>
 
