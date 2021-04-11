@@ -277,8 +277,8 @@
 </blockquote>
 </li>
 </ul>
-<h2 id="LEC2-GO-amp-RPC"><a href="#LEC2-GO-amp-RPC" class="headerlink" title="LEC2 GO &amp; RPC"></a>LEC2 GO &amp; RPC</h2><ul>
-<li><p>Go是<em>类型安全</em>与<em>内存安全</em>的， Thread在Go中叫做<code>Goroutines</code></p>
+<h1 id="LEC2-GO-amp-RPC"><a href="#LEC2-GO-amp-RPC" class="headerlink" title="LEC2 GO &amp; RPC"></a>LEC2 GO &amp; RPC</h1><ul>
+<li><p>Go是<em>类型安全</em>与<em>内存安全</em>的， Threads 在Go中叫做<code>Goroutines</code></p>
 </li>
 <li><p>Multiple Threads 主要用在：</p>
 <ul>
@@ -304,7 +304,7 @@
 </li>
 <li><p>互相协作 Coordination</p>
 <blockquote>
-<p>想象一个生产者消费者模型「2个线程」 如何通信？</p>
+<p>想象一个生产者消费者模型「即 2个线程」 如何通信？</p>
 <blockquote>
 <ul>
 <li>how can the consumer wait (and release the CPU)?<ul>
@@ -320,6 +320,122 @@
 <blockquote>
 <p>Threads之前请求Lock的关系成环</p>
 </blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="http://nil.csail.mit.edu/6.824/2020/notes/crawler.go"><code>Crawler.go</code></a></p>
+<ul>
+<li><p>能在<code>Serial(u, fetcher, fetched)</code>前直接加<code>go</code>达到实用协程并行的效果吗？</p>
+<blockquote>
+<p>不能。 主协程会自动执行，<strong>提早退出</strong> （如下）。</p>
+<p>主协程 应用<code>WaitGroup</code>这个<em>数据结构</em>来维护创建的各个<code>goroutine</code> ,API包括<code>Add(n)</code> <code>Done()</code> <code>Wait()</code> . 维护采用<code>引用计数</code>的方式</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210411172546155.png" alt="image-20210411172546155"></p>
+</blockquote>
+</li>
+<li><p><code>go run -race xx.go</code> 其中<code>-race</code>是 go 内置的 race 检测器， 可用于检测并行程序是否存在对于<em>共享内存区某些变量</em> 的race </p>
+</li>
+<li><p>利用<code>channel</code> 这一<code>生产消费者</code>结构可以简化代替通过共享内存 + 加锁防止竞争的方式来读写的方式。 </p>
+<ul>
+<li><p><code>ch &lt;- []string&#123;&quot;test1&quot;, &quot;test2&quot;&#125;</code>  写入一个元素，该元素为一个 string slice</p>
+</li>
+<li><p><code>x := &lt;- ch </code> x将会是一个<code>[]string&#123;...&#125;</code></p>
+</li>
+<li><p><code>for elem := range ch</code> 从管道队列中逐个读出元素（FIFO），并一直轮询接收 goroutine 发送进来的新元素 </p>
+<blockquote>
+<ul>
+<li>如果ch为空 那么程序会一直Block在此处</li>
+<li>此句并不是遍历退出，而是一直等待channel中的新元素。 因此需要<code>break</code>退出</li>
+<li>读的时候 channel 尾端也可以有新元素不断写入</li>
+</ul>
+</blockquote>
+</li>
+<li><p>需不需要手动关闭 channel？</p>
+<blockquote>
+<p>可以这么做，但很多时候没必要。</p>
+<p>在 Go 中 channel 是一个对象。GO GC会一直监视，如果这个channel已经没有了引用，会自动销毁回收</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><code>channel</code> 底层实现原理：<a target="_blank" rel="noopener" href="https://blog.csdn.net/QiuHaoqian/article/details/108999754">https://blog.csdn.net/QiuHaoqian/article/details/108999754</a></p>
+</li>
+<li><p>何时用<code>sharing mem + lock</code> ？ 何时用<code>channel</code>？</p>
+<blockquote>
+<p>Most problems can be solved in <em>either</em> style</p>
+<ul>
+<li>What makes the most sense depends on how the programmer thinks<ul>
+<li><strong>state</strong> – sharing and locks</li>
+<li><strong>communication</strong> – channels</li>
+</ul>
+</li>
+<li>For the 6.824 labs, I recommend sharing+locks for state,<br>and sync.Cond or channels or time.Sleep() for waiting/notification.</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>RPC</p>
+<ul>
+<li><p>架构</p>
+<blockquote>
+<p>client app        handler fns<br>  stub fns          dispatcher<br>   RPC lib            RPC lib</p>
+<pre><code> net  ------------ net
+</code></pre>
+</blockquote>
+</li>
+<li><p>Go RPC lib做了什么？</p>
+<blockquote>
+<ul>
+<li><p>reads each request</p>
+</li>
+<li><p>creates a new goroutine for this request</p>
+</li>
+<li><p> unmarshalls request</p>
+</li>
+<li><p>looks up the named object (in table create by Register())</p>
+</li>
+<li><p>calls the object’s named method (dispatch)</p>
+</li>
+<li><p>marshalls reply</p>
+<blockquote>
+<p>Go RPC不能传递<code>channels</code>或者<code>function</code></p>
+</blockquote>
+</li>
+<li><p>writes reply on TCP connection</p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>What About <strong>Failure</strong> when using RPC?</p>
+<ul>
+<li><p>“best effort”</p>
+<blockquote>
+<p>client在server response收到前一直阻塞。 如果没收到就产生尝试re-send。 数次不成功后return error</p>
+</blockquote>
+<p>  这种范式一般只用在幂等的<code>read-only op</code>业务上，会有脏读等问题</p>
+</li>
+<li><p>”at most once“  – <strong>much better RPC behavior</strong></p>
+<blockquote>
+<p>对于来自client 的重复请求，server 直接查缓存，返回之前最近的reply，而不是重新run一遍</p>
+<p><em>Q: how to detect a duplicate request?</em></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// client includes unique ID (XID) with each request</span></span><br><span class="line"><span class="comment">// client uses same XID for re-send</span></span><br><span class="line"><span class="comment">// for server:</span></span><br><span class="line">    <span class="keyword">if</span> seen[xid]:</span><br><span class="line">      r = old[xid]</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      r = handler()</span><br><span class="line">      old[xid] = r</span><br><span class="line">      seen[xid] = <span class="literal">true</span></span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ul>
+</li>
+<li><p>Errors in RPC </p>
+<blockquote>
+<p>Go RPC code will return an <strong>error</strong> if it doesn’t get a reply</p>
+<p><em>3 Possible reasons below</em></p>
+</blockquote>
+<ul>
+<li>Timeout of execution </li>
+<li>Server did not see request</li>
+<li>Sever saw &amp; processed the request but server/net carshed before reply came back</li>
+</ul>
 </li>
 </ul>
 </li>
