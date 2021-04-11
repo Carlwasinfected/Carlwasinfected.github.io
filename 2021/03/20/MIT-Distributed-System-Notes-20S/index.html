@@ -307,10 +307,8 @@
 <p>想象一个生产者消费者模型「即 2个线程」 如何通信？</p>
 <blockquote>
 <ul>
-<li>how can the consumer wait (and release the CPU)?<ul>
-<li> how can the producer wake up the consumer?</li>
-</ul>
-</li>
+<li>how can the consumer wait (and release the CPU)?</li>
+<li>how can the producer wake up the consumer?</li>
 </ul>
 </blockquote>
 <p>==&gt; use <code>Go channels</code> or <code>sync.Cond</code> or <code>WaitGroup</code></p>
@@ -378,13 +376,11 @@
 </li>
 </ul>
 <ul>
-<li><p>RPC</p>
+<li><p>RPC   <a target="_blank" rel="noopener" href="http://nil.csail.mit.edu/6.824/2020/notes/kv.go">demo of Put() &amp; Get()</a></p>
 <ul>
 <li><p>架构</p>
 <blockquote>
-<p>client app        handler fns<br>  stub fns          dispatcher<br>   RPC lib            RPC lib</p>
-<pre><code> net  ------------ net
-</code></pre>
+<p>client app        handler fns<br>  stub fns          dispatcher<br>   RPC lib            RPC lib<br>   net  &lt;————&gt;  net</p>
 </blockquote>
 </li>
 <li><p>Go RPC lib做了什么？</p>
@@ -394,7 +390,10 @@
 </li>
 <li><p>creates a new goroutine for this request</p>
 </li>
-<li><p> unmarshalls request</p>
+<li><p>unmarshalls request</p>
+<blockquote>
+<p>解码 反序列化</p>
+</blockquote>
 </li>
 <li><p>looks up the named object (in table create by Register())</p>
 </li>
@@ -412,17 +411,17 @@
 </li>
 <li><p>What About <strong>Failure</strong> when using RPC?</p>
 <ul>
-<li><p>“best effort”</p>
+<li><p>「best effort」</p>
 <blockquote>
 <p>client在server response收到前一直阻塞。 如果没收到就产生尝试re-send。 数次不成功后return error</p>
 </blockquote>
 <p>  这种范式一般只用在幂等的<code>read-only op</code>业务上，会有脏读等问题</p>
 </li>
-<li><p>”at most once“  – <strong>much better RPC behavior</strong></p>
+<li><p>「at most once」  – <strong>much better RPC behavior</strong></p>
 <blockquote>
 <p>对于来自client 的重复请求，server 直接查缓存，返回之前最近的reply，而不是重新run一遍</p>
 <p><em>Q: how to detect a duplicate request?</em></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// client includes unique ID (XID) with each request</span></span><br><span class="line"><span class="comment">// client uses same XID for re-send</span></span><br><span class="line"><span class="comment">// for server:</span></span><br><span class="line">    <span class="keyword">if</span> seen[xid]:</span><br><span class="line">      r = old[xid]</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      r = handler()</span><br><span class="line">      old[xid] = r</span><br><span class="line">      seen[xid] = <span class="literal">true</span></span><br></pre></td></tr></table></figure></blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// client includes **unique ID (XID)** with each request</span></span><br><span class="line"><span class="comment">// client uses **same XID** for re-send</span></span><br><span class="line"><span class="comment">// for server:</span></span><br><span class="line">    <span class="keyword">if</span> seen[xid]:</span><br><span class="line">      r = old[xid]</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      r = handler()</span><br><span class="line">      old[xid] = r</span><br><span class="line">      seen[xid] = <span class="literal">true</span></span><br></pre></td></tr></table></figure></blockquote>
 </li>
 </ul>
 </li>
