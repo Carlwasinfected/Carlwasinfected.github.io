@@ -439,6 +439,55 @@
 </ul>
 </li>
 </ul>
+<h1 id="LEC-3-GFS"><a href="#LEC-3-GFS" class="headerlink" title="LEC 3 GFS"></a>LEC 3 GFS</h1><ul>
+<li><p>课前阅读： 2003GFS论文</p>
+<ul>
+<li><p>一个 <code>GFS cluster</code> 的组成『他们都作为一个普通的「用户级进程」运行在<code>Linux</code>机器上』：</p>
+<ul>
+<li><p><em>一个</em> <code>GFS master</code></p>
+<blockquote>
+<p>一个集群只有一个 master 使<code>metadata</code>的管理变得简单高效。</p>
+<p><code>master</code>的职责？</p>
+<blockquote>
+<ul>
+<li><p>维护元数据 <strong>『GFS Cluster的元数据有以下三种』</strong></p>
+<blockquote>
+<p>元数据都保存在master 的memory里。</p>
+<p>对于一个 64MB 大小的 Chunk，Master 只需要维持不到 64 字节的元数据</p>
+</blockquote>
+<ul>
+<li>文件与Chunk的Namespace <em>『先写入log 持久化，再操作』</em></li>
+<li>文件与Chunk之间的映射关系<em>『先写入log 持久化，再操作』</em></li>
+<li>每个Chunk Replica 的位置 <em>『不持久化，仅询问』</em></li>
+</ul>
+</li>
+<li><p>周期性的<code>ping</code>各个 Chunk Server 确认存活 &amp; 更新状态</p>
+</li>
+<li><p>回收无用的chunk</p>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+</li>
+<li><p>若干甚至上千<code>GFS Chunk Server</code></p>
+</li>
+<li><p>若干<code>GFS Client</code></p>
+</li>
+</ul>
+</li>
+<li><p><code>GFS Client</code>读取文件的流程</p>
+<p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210412192814334.png" alt="image-20210412192814334"></p>
+<ol>
+<li>由上层<code>Application</code>已知指定的文件名和读取位置偏移值，<code>GFS Client</code>可以根据固定的 Chunk 大小『typically 64MB』来计算出目标位置在这个文件的哪一个 Chunk 中『index == 1? index == 2? …』</li>
+<li><code>GFS Client</code>向 <code>GFS Master</code> 发出请求，其中包含要读取的文件名<code>filename</code>以及 Chunk 索引值<code>chunk index</code></li>
+<li>Master 向客户端响应该 Chunk 的 Handle 以及其所有 Replica 当前所在的位置。客户端会以文件名和 Chunk 索引值为键缓存该数据</li>
+<li>之后，客户端便可以选取其中一个 Replica 所在的 Chunk Server 并向其发起请求，请求中会指定需要读取的 Chunk 的 Handle 以及要读取的范围</li>
+<li><code>目标GFS Chunkserver</code>收到请求，返回<code>chunk data</code></li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
 
         </div>
 
