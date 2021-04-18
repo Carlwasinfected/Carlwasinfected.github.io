@@ -439,16 +439,20 @@
 </ul>
 </li>
 </ul>
-<h1 id="LEC-3-GFS"><a href="#LEC-3-GFS" class="headerlink" title="LEC 3 GFS"></a>LEC 3 GFS</h1><h3 id="Pre：-2003-GFS-Paper"><a href="#Pre：-2003-GFS-Paper" class="headerlink" title="Pre： 2003 GFS Paper"></a>Pre： 2003 GFS Paper</h3><ul>
+<h1 id="LEC-3-GFS-–-Google-File-System"><a href="#LEC-3-GFS-–-Google-File-System" class="headerlink" title="LEC 3 GFS – Google File System"></a>LEC 3 GFS – Google File System</h1><blockquote>
+<p><em>“Weak Consistency still works fine!”</em></p>
+<p>Ref: <a target="_blank" rel="noopener" href="https://mr-dai.github.io/gfs/#comments">https://mr-dai.github.io/gfs/#comments</a></p>
+</blockquote>
+<ul>
 <li><p>一个 <code>GFS cluster</code> 的组成『他们都作为一个普通的「用户级进程」运行在<code>Linux</code>机器上』：</p>
 <ul>
 <li><p><em>一个</em> <code>GFS master</code></p>
 <blockquote>
 <p>一个集群只有一个 master 使<code>metadata</code>的管理变得简单高效。</p>
-<p><code>master</code>的职责？</p>
+<p><strong><code>master</code>的职责？</strong></p>
 <blockquote>
 <ul>
-<li><p>维护元数据 <strong>『GFS Cluster的元数据有以下三种』</strong></p>
+<li><p>维护<code>元数据</code> <strong>『GFS Cluster的元数据有以下三种』</strong></p>
 <blockquote>
 <p>元数据都保存在master 的<strong>memory</strong>里,因此操作很快</p>
 <p><em>那么memory的大小会成为瓶颈吗？</em></p>
@@ -480,23 +484,61 @@
 </li>
 </ul>
 </li>
-<li><p><code>GFS Cluster</code>如何保证数据一致性？</p>
+<li><p>关于<code>Metadata of Master</code></p>
+<ul>
+<li><p>在内存<code>RAM</code>中 –&gt; <em>for high speed, it must be <strong>smallish</strong></em></p>
+<blockquote>
+<ul>
+<li><em>filename</em> <em><strong>(NV)</strong></em>–&gt; 维护一个映射表， 包含了每个 file 对应的 `chunk handles 数组</li>
+<li><em>chunk handle</em> –&gt;<ul>
+<li>version***(NV)***： 当前 chunk 的版本号 – <em>如果不持久化 master 重启后将不知道最新是哪个版本</em></li>
+<li>list of chunkservers***(V)***： 持有该 chunk 的所有服务器列表以及数目</li>
+<li>primary***(V)***： 哪个 chunk server 是这个 chunk 当前的 primary， 并在此60s周期内持有这个 chunk 的 chunk lease</li>
+<li>lease expiration time***(V)***： 租约时间</li>
+</ul>
+</li>
+</ul>
+<p><em>NV： 非易失（持久化到硬盘中） V：易失（仅保留在memory中）</em></p>
+</blockquote>
+</li>
+<li><p>在硬盘<code>disk</code>中</p>
+<blockquote>
+<ul>
+<li>log: 执行指令的记录日志</li>
+<li>checkpoint：当前 master 完整快照备份（检查点）</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><code>GFS Cluster</code>如何保证<strong>数据一致性</strong>？</p>
 <ul>
 <li><p><code>namespace</code>完全由单节点 Master 管理在其<em>内存</em>中，这部分数据的修改可以通过让 Master 为其<strong>添加互斥锁</strong>来解决并发修改的问题，因此命名空间的数据修改是可以确保完全原子的</p>
 </li>
 <li><p><strong>文件修改后？</strong></p>
-<p>  首先明确一个 file 被修改后可能进入如下<strong>三种状态</strong></p>
+<p>  首先明确一个**<code>file region</code><strong>被修改后可能进入如下</strong>三种状态**</p>
 <blockquote>
 <ul>
 <li><code>inconsistent</code> ： 不同的 Client 读不同 Server 中的备份，读结果不同</li>
-<li><code>consistent</code>： 不同的 Client 不论读哪个 Server， 都能得到 identical 的结果</li>
-<li><code>defined</code>: 在<code>consistent</code>的基础上，这所有的 Client 都可见上一次修改的内容是什么</li>
+<li><code>consistent</code>： 不同的 Client 不论读哪个 Replica of Server， 都能得到 identical 的结果</li>
+<li><code>defined</code>: 在<code>consistent</code>的基础上，所有的 Client 都可见上一次修改的内容是什么</li>
 </ul>
 </blockquote>
-<p>  状态的变化如下表。可见与本次文件修改操作的<strong>执行成功与否</strong> 和<strong>顺序成功还是并发下成功</strong>有关</p>
+<p>  状态的变化如下表。</p>
+<p>  可见与本次文件修改操作的<strong>执行成功与否</strong> 和<strong>顺序成功还是并发下成功</strong>有关</p>
 <blockquote>
-<p><code>Write</code>和<code>Record Append</code>是GFS提供的两种文件修改方式API</p>
+<p><code>Write</code>和<code>Record Append</code>是GFS提供的两种<code>文件修改</code>方式API</p>
 </blockquote>
+<p>  具体来说，如果 修改操作<code>Mutation</code>是<strong>失败</strong>的，那么文件会进入<code>inconsistent</code>状态『比如 primary 和 secondary A 有预期写入的数据，但 secondary B 由于网络丢包没能成功写入』</p>
+<p>  如果<code>Mutation</code>是成功的，对于<code>Write</code>操作</p>
+<ul>
+<li>整个过程只有一个 Client 请求写入（即不是并发的）， 那么这部分文件是<code>defined</code>, 同时自然也是<code>consistent</code>。</li>
+<li>如果场景是并发的，即该 Primary 同时处理多个 Client发送的写请求，那么</li>
+</ul>
+<p>  如果<code>Mutation</code>是成功的，对于<code>Record Append</code>操作『在 chunk 的末尾追加地写入』</p>
+<ul>
+<li></li>
+</ul>
 <p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210413014752183.png" alt="image-20210413014752183"></p>
 </li>
 </ul>
@@ -512,6 +554,8 @@
 </ol>
 </li>
 <li><p><code>GFS Client</code>写文件的流程</p>
+</li>
+<li><p><code>GFS Client</code>追加写的流程</p>
 </li>
 </ul>
 
