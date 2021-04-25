@@ -441,9 +441,16 @@
 </ul>
 <h1 id="LEC-3-GFS-–-Google-File-System"><a href="#LEC-3-GFS-–-Google-File-System" class="headerlink" title="LEC 3 GFS – Google File System"></a>LEC 3 GFS – Google File System</h1><blockquote>
 <p><em>“Weak Consistency still works fine!”</em></p>
-<p>Ref: <a target="_blank" rel="noopener" href="https://mr-dai.github.io/gfs/#comments">https://mr-dai.github.io/gfs/#comments</a></p>
+<p>参考详解1: <a target="_blank" rel="noopener" href="https://mr-dai.github.io/gfs/#comments">https://mr-dai.github.io/gfs/#comments</a></p>
+<p>参考详解2:<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/354450124">https://zhuanlan.zhihu.com/p/354450124</a></p>
 </blockquote>
 <ul>
+<li><p>为什么构建一个分布式系统如此难？</p>
+<blockquote>
+<p><strong>high performance</strong> -&gt; shard data over many servers <em>「分片数据」</em><br>  many servers -&gt; constant faults<br>  fault tolerance -&gt; replication<br>  replication -&gt; potential inconsistencies<br>  better consistency -&gt; <strong>low performance</strong> </p>
+<p><em>很显然最终结果与我们的初衷截然相反 因此 <code>it is all about trade-offs</code></em></p>
+</blockquote>
+</li>
 <li><p>一个 <code>GFS cluster</code> 的组成『他们都作为一个普通的「用户级进程」运行在<code>Linux</code>机器上』：</p>
 <ul>
 <li><p><em>一个</em> <code>GFS master</code></p>
@@ -484,7 +491,7 @@
 </li>
 </ul>
 </li>
-<li><p>关于<code>Metadata of Master</code></p>
+<li><p>关于元数据<code>Metadata of Master</code></p>
 <ul>
 <li><p>在内存<code>RAM</code>中 –&gt; <em>for high speed, it must be <strong>smallish</strong></em></p>
 <blockquote>
@@ -516,6 +523,7 @@
 <li><p><code>namespace</code>完全由单节点 Master 管理在其<em>内存</em>中，这部分数据的修改可以通过让 Master 为其<strong>添加互斥锁</strong>来解决并发修改的问题，因此命名空间的数据修改是可以确保完全原子的</p>
 </li>
 <li><p><strong>文件修改后？</strong></p>
+<p>  GFS 是<strong>弱一致性</strong>的，并不保证一个 chunk 的所有副本都一致「e.g., 追加失败后的重试」</p>
 <p>  首先明确一个**<code>file region</code><strong>被修改后可能进入如下</strong>三种状态**</p>
 <blockquote>
 <ul>
@@ -531,8 +539,9 @@
 </blockquote>
 <p>  具体来说，如果 修改操作<code>Mutation</code>是<strong>失败</strong>的，那么文件会进入<code>inconsistent</code>状态『比如 primary 和 secondary A 有预期写入的数据，但 secondary B 由于网络丢包没能成功写入』</p>
 <p>  如果<code>Mutation</code>是成功的，对于<code>Write</code>操作</p>
+</li>
+<li><p>整个过程只有一个 Client 请求写入（即不是并发的）， 那么这部分文件是<code>defined</code>, 同时自然也是<code>consistent</code>。</p>
 <ul>
-<li>整个过程只有一个 Client 请求写入（即不是并发的）， 那么这部分文件是<code>defined</code>, 同时自然也是<code>consistent</code>。</li>
 <li>如果场景是并发的，即该 Primary 同时处理多个 Client发送的写请求，那么</li>
 </ul>
 <p>  如果<code>Mutation</code>是成功的，对于<code>Record Append</code>操作『在 chunk 的末尾追加地写入』 xxxxxxx</p>
@@ -543,19 +552,35 @@
 </li>
 </ul>
 </li>
+<li><p>为什么 GFS 设计成只保证弱一致性？ 如何转变为强一致性？</p>
+<blockquote>
+<p>tbd</p>
+</blockquote>
+</li>
 <li><p><code>GFS Client</code>读取文件的流程</p>
 <p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210412192814334.png" alt="image-20210412192814334"></p>
 <ol>
 <li>由上层<code>Application</code>已知指定的文件名和读取位置偏移值，<code>GFS Client</code>可以根据固定的 Chunk 大小『typically 64MB』来计算出目标位置在这个文件的哪一个 Chunk 中『index == 1? index == 2? …』</li>
 <li><code>GFS Client</code>向 <code>GFS Master</code> 发出请求，其中包含要读取的文件名<code>filename</code>以及 Chunk 索引值<code>chunk index</code></li>
-<li><code>GFS Master</code> 向<code>client</code>响应<code>check handle</code> 以及其所有 Replica 当前所在的<code>location</code>。 同时客户端会以文件名和 Chunk 索引值为键<em>缓存</em>该数据</li>
+<li><code>GFS Master</code> 向<code>client</code>响应<code>check handle</code> 以及其所有 Replica 当前所在的<code>location</code>。 同时客户端会以文件名和 Chunk 索引值为键缓存该<code>metadata</code></li>
 <li>之后，客户端便可以选取其中一个 Replica 所在的 Chunk Server 「大多数时是最近的那个」并向其发起请求，请求中会指定需要读取的<code>chunk handle</code> 以及要读取的数据范围<code>byte range</code></li>
 <li><code>目标GFS Chunkserver</code>收到请求，返回<code>chunk data</code></li>
 </ol>
 </li>
 <li><p><code>GFS Client</code>写文件的流程</p>
+<p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210425191442046.png" alt="image-20210425191442046"></p>
+<ol>
+<li>client 向 master 询问 <code>Primary</code> 和 <code>Secondary</code>。「如果没有对于这个 chunk， 此时没有 chunkserver 持有租约，master 将选择一个授予<code>Lease</code>」</li>
+<li>master 返回 <code>Primary</code> 和 <code>Secondary</code> 的信息，client 缓存这些信息，只有当 <code>Primary</code> 不可达或者<strong>租约过期</strong>才再次联系 master；</li>
+<li>client 将追加的记录通过<code>DFS</code>发送到**每一个 chunkserver(不仅仅是<code>Primary</code>)**，chunkserver 先将数据写到 LRU 缓存( memory )中(不是local disk)；</li>
+<li>一旦 client 确认每个 chunkserver 都收到数据，client 向 <code>Primary</code> 发送写请求，<code>Primary</code> 可能会收到多个连续的写请求，会先将这些操作的顺序写入本地，做好调度排序。</li>
+<li><code>Primary</code> 做完写请求后，将写请求和顺序转发给所有的 <code>Secondary</code>，让他们以同样的顺序写数据；</li>
+<li><code>Secondary</code> 完成后应答 <code>Primary</code>；</li>
+<li><code>Primary</code> 应答 client 成功或失败。如果出现失败，client 会重试，但在重试整个写之前，会先重复步骤 3-7；</li>
+</ol>
 </li>
 <li><p><code>GFS Client</code>追加写的流程</p>
+<p>  tbd</p>
 </li>
 </ul>
 
