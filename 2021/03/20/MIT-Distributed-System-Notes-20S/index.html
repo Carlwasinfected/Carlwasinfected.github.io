@@ -524,7 +524,7 @@
 </li>
 <li><p><strong>文件修改后？</strong></p>
 <p>  GFS 是<strong>弱一致性</strong>的，并不保证一个 chunk 的所有副本都一致「e.g., 追加失败后的重试」</p>
-<p>  首先明确一个**<code>file region</code><strong>被修改后可能进入如下</strong>三种状态**</p>
+<p>  首先明确一个<code>file region</code>被修改后可能进入如下<strong>三种状态</strong></p>
 <blockquote>
 <ul>
 <li><code>inconsistent</code> ： 不同的 Client 读不同 Server 中的备份，读结果不同</li>
@@ -538,13 +538,14 @@
 <p><code>Write</code>和<code>Record Append</code>是GFS提供的两种<code>文件修改</code>方式API</p>
 </blockquote>
 <p>  具体来说，如果 修改操作<code>Mutation</code>是<strong>失败</strong>的，那么文件会进入<code>inconsistent</code>状态『比如 primary 和 secondary A 有预期写入的数据，但 secondary B 由于网络丢包没能成功写入』</p>
-<p>  如果<code>Mutation</code>是成功的，对于<code>Write</code>操作</p>
-</li>
-<li><p>整个过程只有一个 Client 请求写入（即不是并发的）， 那么这部分文件是<code>defined</code>, 同时自然也是<code>consistent</code>。</p>
+<p>  反之，如果<code>Mutation</code>是成功的，对于<code>Write</code>操作</p>
 <ul>
-<li>如果场景是并发的，即该 Primary 同时处理多个 Client发送的写请求，那么</li>
+<li><p>整个过程只有一个 Client 请求写入（即不是并发的）， 那么这部分文件是<code>defined</code>, 同时自然也是<code>consistent</code>。</p>
+</li>
+<li><p>如果场景是并发的，即该 Primary 同时处理多个 Client发送的写请求，那么</p>
+</li>
 </ul>
-<p>  如果<code>Mutation</code>是成功的，对于<code>Record Append</code>操作『在 chunk 的末尾追加地写入』 xxxxxxx</p>
+<p>  反之，如果<code>Mutation</code>是成功的，对于<code>Record Append</code>操作『在 chunk 的末尾追加地写入』 tbd</p>
 <ul>
 <li></li>
 </ul>
@@ -562,7 +563,7 @@
 <ol>
 <li>由上层<code>Application</code>已知指定的文件名和读取位置偏移值，<code>GFS Client</code>可以根据固定的 Chunk 大小『typically 64MB』来计算出目标位置在这个文件的哪一个 Chunk 中『index == 1? index == 2? …』</li>
 <li><code>GFS Client</code>向 <code>GFS Master</code> 发出请求，其中包含要读取的文件名<code>filename</code>以及 Chunk 索引值<code>chunk index</code></li>
-<li><code>GFS Master</code> 向<code>client</code>响应<code>check handle</code> 以及其所有 Replica 当前所在的<code>location</code>。 同时客户端会以文件名和 Chunk 索引值为键缓存该<code>metadata</code></li>
+<li><code>GFS Master</code> 向<code>client</code>响应<code>check handle</code> 以及其所有 Replica 当前所在的<code>location</code>。 同时客户端会以文件名和 Chunk 索引值为键缓存该<code>metadata</code>『注意 client 缓存的是元数据，目的是减少与 master 之前的频繁通信开销  client 不会缓存 chunk 里的文件内容』</li>
 <li>之后，客户端便可以选取其中一个 Replica 所在的 Chunk Server 「大多数时是最近的那个」并向其发起请求，请求中会指定需要读取的<code>chunk handle</code> 以及要读取的数据范围<code>byte range</code></li>
 <li><code>目标GFS Chunkserver</code>收到请求，返回<code>chunk data</code></li>
 </ol>
@@ -581,6 +582,12 @@
 </li>
 <li><p><code>GFS Client</code>追加写的流程</p>
 <p>  tbd</p>
+</li>
+<li><p>GFS 中的快照</p>
+</li>
+<li><p>GFS 中的<code>fault-torlance</code></p>
+</li>
+<li><p>FAQ</p>
 </li>
 </ul>
 
