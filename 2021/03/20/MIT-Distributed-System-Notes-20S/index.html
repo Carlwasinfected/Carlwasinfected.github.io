@@ -451,7 +451,10 @@
 <p><em>很显然最终结果与我们的初衷截然相反 因此 <code>it is all about trade-offs</code></em></p>
 </blockquote>
 </li>
-<li><p>一个 <code>GFS cluster</code> 的组成『他们都作为一个普通的「用户级进程」运行在<code>Linux</code>机器上』：</p>
+<li><p>一个 <code>GFS cluster</code> 的组成</p>
+<blockquote>
+<p><em>『他们都作为一个普通的「用户级进程」运行在<code>Linux</code>机器上』</em></p>
+</blockquote>
 <ul>
 <li><p><em>一个</em> <code>GFS master</code></p>
 <blockquote>
@@ -518,12 +521,57 @@
 </li>
 </ul>
 </li>
-<li><p><code>GFS Cluster</code>是如何保证<strong>数据一致性</strong>的？</p>
+<li><p>读操作的流程</p>
+<p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210412192814334.png" alt="image-20210412192814334"></p>
+<ol>
+<li>由上层<code>Application</code>已知指定的文件名和读取位置偏移值，<code>GFS Client</code>可以根据固定的 Chunk 大小『typically 64MB』来计算出目标位置在这个文件的哪一个 Chunk 中『index == 1? index == 2? …』</li>
+<li><code>GFS Client</code>向 <code>GFS Master</code> 发出请求，其中包含要读取的文件名<code>filename</code>以及 Chunk 索引值<code>chunk index</code></li>
+<li><code>GFS Master</code> 向<code>client</code>响应<code>check handle</code> 以及其所有 Replica 当前所在的<code>location</code>。 同时客户端会以文件名和 Chunk 索引值为键缓存该<code>metadata</code>『注意 client 缓存的是元数据，目的是减少与 master 之前的频繁通信开销  client 不会缓存 chunk 里的文件内容』</li>
+<li>之后，客户端便可以选取其中一个 Replica 所在的 Chunk Server 「大多数时是最近的那个」并向其发起请求，请求中会指定需要读取的<code>chunk handle</code> 以及要读取的数据范围<code>byte range</code></li>
+<li><code>目标GFS Chunkserver</code>收到请求，返回<code>chunk data</code></li>
+</ol>
+</li>
+<li><p>写操作的流程</p>
+<p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210425191442046.png" alt="image-20210425191442046"></p>
+<ol>
+<li><p>client 向 master 询问 <code>Primary</code> 和 <code>Secondary</code>。「如果没有对于这个 chunk， 此时没有 chunkserver 持有 lease ，master 将选择一个授予<code>Lease</code>」</p>
+</li>
+<li><p>master 返回 <code>Primary</code> 和 <code>Secondary</code> 的信息，client 缓存这些信息，只有当 <code>Primary</code> 不可达或者<strong>租约过期</strong>才再次联系 master；</p>
+</li>
+<li><p>client 将追加的记录通过<code>DFS</code>发送到**每一个 chunkserver(不仅仅是<code>Primary</code>)**，chunkserver 先将数据写到 *<em>LRU 缓存( memory )中</em>(不是local disk)***；</p>
+</li>
+<li><p>一旦 client 确认每个 chunkserver 都收到数据，client 向 <code>Primary</code> 发送写请求，**<code>Primary</code> 可能会收到多个连续的写请求，会先将这些操作的顺序写入本地，做好调度排序**；</p>
+</li>
+<li><p><code>Primary</code> 做完写请求后，将写请求和顺序转发给所有的 <code>Secondary</code>，让他们以同样的顺序写数据；</p>
+</li>
+<li><p><code>Secondary</code> 完成后应答 <code>Primary</code>；</p>
+</li>
+<li><p><code>Primary</code> 应答 client 成功或失败。如果出现失败，client 会重试，但在重试整个写之前，会先重复步骤 3-7；</p>
+<blockquote>
+<p>如果失败「primary回复client “NO”」，将可能会出现chunk的不一致.  &lt;=&gt; 此时有 0 ～ n-1个成功写入</p>
+<p><strong>「比如第一次尝试写入B，结果在第三个server上失败了；之后的第二次写入成功了. 三个chunk server都有相同的offset可以读到B，但是chunk的内容由于第一次“NO”而并不相同」</strong> </p>
+<img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210712200908253.png" alt="image-20210712200908253" style="zoom:67%;" /></blockquote>
+</li>
+</ol>
+</li>
+<li><p><code>GFS Client</code>追加写的流程</p>
+<p>   与write类似，只不过 offset 固定是chunk当前的末尾位置进行写入 –&gt; <strong>追加</strong></p>
+</li>
+<li><p>GFS 中的快照</p>
+<p>  创造checkpoint</p>
+</li>
+<li><p><code>“split-brain“</code>现象与解决</p>
+<ul>
+<li>现象：<code>master</code> 会不停 ping <code>primary chunkserver</code>确保存活. 但是如果因为<strong>network partition</strong> 导致ping不通，<code>master</code>将指定一个新<code>primary</code>，但此时<code>old primary</code>仍然是存活的而且在不停接受并处理许多 client 的请求；同时新 client 在询问<code>master</code>之后将与<code>new primary</code>通信 –&gt; <strong>最终产生两个分道扬镳的数据完全不同的chunk</strong></li>
+<li>解决：通过指定 lease 和 expire time. 「eg, 60s」 所以当<code>master</code> ping 不通时将知道 lease 到期后一定可以指定一个<code>new primary server</code></li>
+</ul>
+</li>
+<li><p>**GFS 中的一致性模型 ** </p>
 <ul>
 <li><p><code>namespace</code>完全由单节点 Master 管理在其<em>内存</em>中，这部分数据的修改可以通过让 Master 为其<strong>添加互斥锁</strong>来解决并发修改的问题，因此命名空间的数据修改是可以确保完全原子的</p>
 </li>
 <li><p><strong>文件修改后？</strong></p>
-<p>  GFS 是<strong>弱一致性</strong>的，并不保证一个 chunk 的所有副本都一致「e.g., 追加失败后的重试」</p>
+<p>  GFS 是<strong>弱一致性</strong>的，即：<strong>并不保证一个 chunk 的所有副本都一致</strong>「e.g., 追加失败后的重试，即上图」</p>
 <p>  首先明确一个<code>file region</code>被修改后可能进入如下<strong>三种状态</strong></p>
 <blockquote>
 <ul>
@@ -555,62 +603,24 @@
 </li>
 <li><p>为什么 GFS 设计成只保证弱一致性？ 如何转变为强一致性？</p>
 <blockquote>
-<p>tbd</p>
-</blockquote>
-</li>
-<li><p>读操作的流程</p>
-<p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210412192814334.png" alt="image-20210412192814334"></p>
-<ol>
-<li>由上层<code>Application</code>已知指定的文件名和读取位置偏移值，<code>GFS Client</code>可以根据固定的 Chunk 大小『typically 64MB』来计算出目标位置在这个文件的哪一个 Chunk 中『index == 1? index == 2? …』</li>
-<li><code>GFS Client</code>向 <code>GFS Master</code> 发出请求，其中包含要读取的文件名<code>filename</code>以及 Chunk 索引值<code>chunk index</code></li>
-<li><code>GFS Master</code> 向<code>client</code>响应<code>check handle</code> 以及其所有 Replica 当前所在的<code>location</code>。 同时客户端会以文件名和 Chunk 索引值为键缓存该<code>metadata</code>『注意 client 缓存的是元数据，目的是减少与 master 之前的频繁通信开销  client 不会缓存 chunk 里的文件内容』</li>
-<li>之后，客户端便可以选取其中一个 Replica 所在的 Chunk Server 「大多数时是最近的那个」并向其发起请求，请求中会指定需要读取的<code>chunk handle</code> 以及要读取的数据范围<code>byte range</code></li>
-<li><code>目标GFS Chunkserver</code>收到请求，返回<code>chunk data</code></li>
-</ol>
-</li>
-<li><p>写操作的流程</p>
-<p>  <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210425191442046.png" alt="image-20210425191442046"></p>
-<ol>
-<li><p>client 向 master 询问 <code>Primary</code> 和 <code>Secondary</code>。「如果没有对于这个 chunk， 此时没有 chunkserver 持有 lease ，master 将选择一个授予<code>Lease</code>」</p>
-</li>
-<li><p>master 返回 <code>Primary</code> 和 <code>Secondary</code> 的信息，client 缓存这些信息，只有当 <code>Primary</code> 不可达或者<strong>租约过期</strong>才再次联系 master；</p>
-</li>
-<li><p>client 将追加的记录通过<code>DFS</code>发送到**每一个 chunkserver(不仅仅是<code>Primary</code>)**，chunkserver 先将数据写到 *<em>LRU 缓存( memory )中</em>(不是local disk)***；</p>
-</li>
-<li><p>一旦 client 确认每个 chunkserver 都收到数据，client 向 <code>Primary</code> 发送写请求，**<code>Primary</code> 可能会收到多个连续的写请求，会先将这些操作的顺序写入本地，做好调度排序**；</p>
-</li>
-<li><p><code>Primary</code> 做完写请求后，将写请求和顺序转发给所有的 <code>Secondary</code>，让他们以同样的顺序写数据；</p>
-</li>
-<li><p><code>Secondary</code> 完成后应答 <code>Primary</code>；</p>
-</li>
-<li><p><code>Primary</code> 应答 client 成功或失败。如果出现失败，client 会重试，但在重试整个写之前，会先重复步骤 3-7；</p>
-<blockquote>
-<p>如果失败「primary回复client “NO”」，将可能会出现chunk的不一致.</p>
-<p><strong>「比如第一次尝试写入B，结果在第三个server上失败了；之后的第二次写入成功了. 三个chunk server都有相同的offset可以读到B，但是chunk的内容由于一次“NO”而并不相同」</strong></p>
-<img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210712200908253.png" alt="image-20210712200908253" style="zoom:67%;" /></blockquote>
-</li>
-</ol>
-</li>
-<li><p><code>“split-brain“</code>现象与解决</p>
 <ul>
-<li>现象：<code>master</code> 会不停 ping <code>primary chunkserver</code>确保存活. 但是如果因为<strong>network partition</strong> 导致ping不通，<code>master</code>将指定一个新<code>primary</code>，但此时<code>old primary</code>仍然是存活的而且在不停接受并处理许多 client 的请求；同时新 client 在询问<code>master</code>之后将与<code>new primary</code>通信 –&gt; <strong>最终产生两个分道扬镳的数据完全不同的chunk</strong></li>
-<li>解决：通过指定 lease 和 expire time. 「eg, 60s」 所以当<code>master</code> ping 不通时将知道 lease 到期后一定可以指定一个<code>new primary server</code></li>
+<li>两阶段提交</li>
+<li></li>
 </ul>
-</li>
-<li><p><code>GFS Client</code>追加写的流程</p>
-<p>   与write类似，只不过 offset 固定是chunk中的末尾位置</p>
-</li>
-<li><p>GFS 中的快照</p>
-<p>  创造checkpoint</p>
-</li>
-<li><p>GFS中的一致性模型</p>
+</blockquote>
 </li>
 <li><p>GFS 中的<code>fault-torlance</code></p>
 </li>
 <li><p>FAQ</p>
 </li>
 </ul>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1>
+<h1 id="LEC4-Replica"><a href="#LEC4-Replica" class="headerlink" title="LEC4 Replica"></a>LEC4 Replica</h1><p>课前论文：<a target="_blank" rel="noopener" href="http://nil.csail.mit.edu/6.824/2020/papers/vm-ft.pdf">The Design of a Practical System for Fault-Tolerant Virtual Machines</a>  from <em>VMWare</em></p>
+<p>论文FAQ：<a target="_blank" rel="noopener" href="http://nil.csail.mit.edu/6.824/2020/papers/vm-ft-faq.txt">http://nil.csail.mit.edu/6.824/2020/papers/vm-ft-faq.txt</a></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>分布式系统介绍与入门资料汇总：<a target="_blank" rel="noopener" href="https://www.1point3acres.com/bbs/thread-777930-1-1.html">https://www.1point3acres.com/bbs/thread-777930-1-1.html</a></li>
+<li>四个lab的思路文档：<a target="_blank" rel="noopener" href="https://github.com/LebronAl/MIT6.824-2021">https://github.com/LebronAl/MIT6.824-2021</a></li>
+</ul>
+
         </div>
 
         
