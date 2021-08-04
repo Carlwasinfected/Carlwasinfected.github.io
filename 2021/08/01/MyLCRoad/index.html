@@ -758,12 +758,22 @@
 <h1 id="8-DFS-BFS"><a href="#8-DFS-BFS" class="headerlink" title="8. DFS/BFS"></a>8. DFS/BFS</h1><h2 id="Notes-7"><a href="#Notes-7" class="headerlink" title="Notes:"></a>Notes:</h2><p>DFS需要用到<code>stack</code>，要么自己维护数据结构，要么利用函数栈回溯.</p>
 <p>BFS需要用到<code>deque</code>，使用时注意<code>import collections</code>. API用<code>popleft()</code>和<code>append()</code></p>
 <h2 id="Problems-5"><a href="#Problems-5" class="headerlink" title="Problems"></a>Problems</h2><h1 id="9-回溯"><a href="#9-回溯" class="headerlink" title="9. 回溯"></a>9. 回溯</h1><h2 id="Notes-8"><a href="#Notes-8" class="headerlink" title="Notes"></a>Notes</h2><p><strong>一些结论</strong></p>
-<p>回溯问题本质上是一棵<strong>决策树的遍历</strong>,因此画出递归树可以直观帮助理解.</p>
-<p>回溯可以用于解决<code>子集「subset」</code> <code>排列「permutation」</code> <code>组合「combination」</code> 问题</p>
+<ul>
+<li><p>回溯问题本质上是一棵<strong>决策树的遍历</strong>,因此画出递归树可以直观帮助理解.</p>
+</li>
+<li><p>回溯可以用于解决<code>子集「subset」</code> <code>排列「permutation」</code> <code>组合「combination」</code> 问题</p>
 <ul>
 <li>子集:</li>
 <li>组合:</li>
-<li>排列</li>
+<li>排列:</li>
+</ul>
+</li>
+<li><p>回溯算法无论怎么优化剪枝,穷举整棵决策树都是无法避免的. 因此复杂度不会低于<strong>O(N!)</strong></p>
+<blockquote>
+<p>递归类型算法的时间复杂度: T = <strong>子问题总数</strong> x <strong>每个子问题的时间复杂度</strong></p>
+<p>所以对于搜索决策树的回溯问题来说, <strong>T = n x n-1 x n-2 …. 1 = n!</strong></p>
+</blockquote>
+</li>
 </ul>
 <p><strong>回溯算法的模版如下</strong>:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">result = []</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">backtackhelper</span>(<span class="params">路径, 选择列表</span>):</span></span><br><span class="line">    <span class="keyword">if</span> 满足结束条件:</span><br><span class="line">        res.append(当前路径.copy()) <span class="comment">###### 注意.copy()浅拷贝 #####</span></span><br><span class="line">        <span class="comment"># probably return here~</span></span><br><span class="line">     </span><br><span class="line">    <span class="keyword">for</span> 选择 <span class="keyword">in</span> 选择列表:</span><br><span class="line">        做选择 <span class="comment"># e.g., append更新当前路径</span></span><br><span class="line">        backtrackhelper(路径, 选择列表) <span class="comment"># e.g.,选择列表[i ... n] --&gt; [i+1 ... n]</span></span><br><span class="line">        撤销选择 <span class="comment"># e.g, pop更新回溯当前路径</span></span><br></pre></td></tr></table></figure>
