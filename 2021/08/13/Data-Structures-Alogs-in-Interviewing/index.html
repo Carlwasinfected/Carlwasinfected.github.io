@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Carl">
+
+
+
+
+
+<title>Data Structures &amp; Alogs in Interviewing | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Carl&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Carl&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Data Structures &amp; Alogs in Interviewing</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Carl</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">August 13, 2021&nbsp;&nbsp;22:26:53</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="快排-amp-快选"><a href="#快排-amp-快选" class="headerlink" title="快排 &amp; 快选"></a>快排 &amp; 快选</h1><blockquote>
+<p>Reference: </p>
+<ul>
+<li>quick select wiki:<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Quickselect">https://en.wikipedia.org/wiki/Quickselect</a></li>
+</ul>
+</blockquote>
+<h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><p>快选类似快排, 但是只向目标区间这一边递归, 因此时间复杂度是<strong>O(n)</strong>. 快排逃不了两边都要一直分别递归下去, 因此复杂度是<strong>O(nlogn)</strong></p>
+<blockquote>
+<p><em>As with quicksort, quickselect is generally implemented as an <em>in-place</em> algorithm, and beyond selecting the <em>k</em>th element, it also partially sorts the data.</em></p>
+</blockquote>
+<p><strong>快选:比堆更快地找到数组的第kth min/max元素; 但是小心函数爆栈</strong></p>
+<p>注意以下几个要点 👇</p>
+<ol>
+<li>搜索区间是[left, right], 也就是说两者都是incluisve的. 一开始传参需要注意<code>[0, len-1]</code></li>
+<li><code>partition()</code>函数有<strong>三个阶段的swap</strong> </li>
+<li><code>lst[cur_idx]</code>总是落后于<code>lst[i]</code>.  由于我们是遍历<code>lst[i]</code>, 因此判断的是如果<code>lst[i]</code><strong>大于</strong>枢纽元,则把它互换,扔给前面<code>cur_idx</code>那个位置.  <em>「以从小到大排序为例」</em></li>
+<li>别忘了如果<code>cur_idx</code>何时++</li>
+</ol>
+<p><strong>快排</strong> </p>
+<h2 id="快选例题"><a href="#快选例题" class="headerlink" title="快选例题"></a>快选例题</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/kth-largest-element-in-a-stream/"><strong>703. Kth Largest Element in a Stream</strong></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, k: <span class="built_in">int</span>, nums: List[<span class="built_in">int</span>]</span>):</span></span><br><span class="line">    self.l = nums</span><br><span class="line">    self.targetidx = <span class="built_in">len</span>(self.l) - k</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span>(<span class="params">self, val: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">    <span class="comment"># 1. update target index</span></span><br><span class="line">    self.targetidx += <span class="number">1</span></span><br><span class="line">    self.l.append(val)</span><br><span class="line">    ans =  self.quickselect(<span class="number">0</span>,<span class="built_in">len</span>(self.l)-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> ans</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">quickselect</span>(<span class="params">self, left, right</span>) -&gt; int:</span></span><br><span class="line">    <span class="keyword">if</span> left == right:</span><br><span class="line">        <span class="keyword">return</span> self.l[left]</span><br><span class="line">    </span><br><span class="line">    pivotidx = random.randint(left, right)</span><br><span class="line">    pivotidx = self.partition(left, right, pivotidx)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> pivotidx == self.targetidx:</span><br><span class="line">        <span class="keyword">return</span> self.l[pivotidx]</span><br><span class="line">    <span class="keyword">elif</span> pivotidx &lt; self.targetidx:</span><br><span class="line">        <span class="keyword">return</span> self.quickselect(pivotidx+<span class="number">1</span>, right)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> self.quickselect(left, pivotidx-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">partition</span>(<span class="params">self, left, right, pidx</span>) -&gt; int:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;return the real index of unsorted arr[pivotidx]&quot;&quot;&quot;</span></span><br><span class="line">    pval = self.l[pidx]</span><br><span class="line">    <span class="comment"># first swap</span></span><br><span class="line">    self.l[pidx], self.l[right] = self.l[right], self.l[pidx]</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># second swap</span></span><br><span class="line">    cur_idx = left</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(left, right): <span class="comment"># 注意left, right本身都是inclusive的, 因此右边界是 right-1而不是-2</span></span><br><span class="line">        <span class="keyword">if</span> self.l[i] &lt; pval: <span class="comment"># 注意 </span></span><br><span class="line">            self.l[cur_idx],  self.l[i] = self.l[i], self.l[cur_idx]</span><br><span class="line">            cur_idx += <span class="number">1</span> <span class="comment"># 注意. Hit if 才++</span></span><br><span class="line">    <span class="comment"># third swap</span></span><br><span class="line">    self.l[right], self.l[cur_idx] = self.l[cur_idx], self.l[right]</span><br><span class="line">    <span class="keyword">return</span> cur_idx</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong><a target="_blank" rel="noopener" href="https://leetcode.com/problems/kth-largest-element-in-an-array/">215. Kth Largest Element in an Array</a></strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">findKthLargest</span>(<span class="params">self, nums: List[<span class="built_in">int</span>], k: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;amazon 2021 vo : https://www.1point3acres.com/bbs/thread-787220-1-1.html&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># Quick Select O(N)</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">partition</span>(<span class="params">left, right, pivot_idx</span>):</span></span><br><span class="line">            pivot = nums[pivot_idx]</span><br><span class="line">            <span class="comment">#1. swap pivot to the end</span></span><br><span class="line">            nums[pivot_idx], nums[right] = nums[right], nums[pivot_idx]</span><br><span class="line">            </span><br><span class="line">            <span class="comment">#2. compare nums[i] with pivot; move all smaller element to the left</span></span><br><span class="line">            store_idx = left <span class="comment"># 注意 不是0</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(left, right):  <span class="comment"># 迭代区间[left, right-1] 注意right已经是len-1</span></span><br><span class="line">                <span class="keyword">if</span> nums[i] &lt; pivot:</span><br><span class="line">                    <span class="comment"># swap</span></span><br><span class="line">                    nums[store_idx], nums[i] = nums[i], nums[store_idx]</span><br><span class="line">                    store_idx += <span class="number">1</span></span><br><span class="line">            <span class="comment"># 3. move pivot to its final place</span></span><br><span class="line">            nums[store_idx], nums[right] = nums[right], nums[store_idx]</span><br><span class="line">            <span class="keyword">return</span> store_idx</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">quickselect</span>(<span class="params">left, right, target_idx</span>):</span></span><br><span class="line">            <span class="keyword">if</span> left == right:</span><br><span class="line">                <span class="keyword">return</span> nums[left]  <span class="comment"># answer1</span></span><br><span class="line">            </span><br><span class="line">            pivot_idx = random.randint(left, right)</span><br><span class="line">            pivot_idx = partition(left, right, pivot_idx)</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> target_idx == pivot_idx:</span><br><span class="line">                <span class="keyword">return</span> nums[target_idx] <span class="comment"># answer2</span></span><br><span class="line">            <span class="keyword">elif</span> target_idx &lt; pivot_idx:</span><br><span class="line">                <span class="keyword">return</span> quickselect(left, pivot_idx-<span class="number">1</span>, target_idx)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> quickselect(pivot_idx+<span class="number">1</span>, right, target_idx)</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">return</span> quickselect(<span class="number">0</span>, <span class="built_in">len</span>(nums)-<span class="number">1</span>, <span class="built_in">len</span>(nums)-k)</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="单调栈和单调队列"><a href="#单调栈和单调队列" class="headerlink" title="单调栈和单调队列"></a>单调栈和单调队列</h1><p><strong>单调栈</strong></p>
+<p>When: 需要找到数组中当前元素的<strong>“下一个更大元素”</strong></p>
+<p>特点: 栈中元素都是单调递增或者单调递增的. 如果求下一个更大的元素, 显然要求出栈的序列是递增的「否则可能出现下二个更大元素. 那么要求<strong>入栈的序列是递减</strong>的, 比如<code>[6, 3, 2, 1</code>   也就是说遍历过程中遇到大于等于栈顶的元素需要一直pop,知道栈顶元素小于遍历元素.   </p>
+<blockquote>
+<p>e.g., <code>[6, 3, 2, 1</code> 遇到了4, 那么要依次pop掉1,2,3; ==&gt;  <code>[6,4</code></p>
+</blockquote>
+<p>又因为“下一个” 代表着要在找索引比当前元素更大的区间里搜索. 所以可知以下两个特点 👇👇</p>
+<blockquote>
+<ol>
+<li>从数组结尾往前遍历</li>
+<li>只让比当前栈顶元素大的入栈, 如果不满足, 那么一直pop栈顶直到空</li>
+</ol>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># “下一个更大元素“的模版 </span></span><br><span class="line"></span><br><span class="line">s = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(arr)-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>):<span class="comment"># from end to 0</span></span><br><span class="line">    <span class="comment"># 如果栈顶小于等于元素,就一直pop; 以此维持stack**自底向上是单调减的** </span></span><br><span class="line">    <span class="keyword">while</span> s <span class="keyword">and</span> s[-<span class="number">1</span>] &lt;= arr[i]: </span><br><span class="line">        s.pop()</span><br><span class="line">    ans[i] = s[-<span class="number">1</span>] <span class="keyword">if</span> <span class="keyword">not</span> s.empty() <span class="keyword">else</span> -<span class="number">1</span> <span class="comment"># ans[i]: 第i个元素的下一个更大元素</span></span><br><span class="line">    s.append(arr[i])</span><br></pre></td></tr></table></figure>
+
+<h2 id="单调栈例题"><a href="#单调栈例题" class="headerlink" title="单调栈例题"></a>单调栈例题</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-element-i/"><strong>\496. Next Greater Element I</strong></a></p>
+<blockquote>
+<img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210814005948436.png" alt="image-20210814005948436" style="zoom:50%;" />
+
+<p>其中nums1是nums2的子集. 二者都没有重复元素</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">nextGreaterElement</span>(<span class="params">self, nums1: List[<span class="built_in">int</span>], nums2: List[<span class="built_in">int</span>]</span>) -&gt; List[int]:</span></span><br><span class="line">        <span class="comment"># mono stack</span></span><br><span class="line">        <span class="comment"># Note that nums1 is subset of nums2 &amp;&amp; all elements are unique</span></span><br><span class="line">        ans = [<span class="number">0</span>] * <span class="built_in">len</span>(nums1)</span><br><span class="line">        <span class="comment">#res = 0</span></span><br><span class="line">        d =&#123;&#125; <span class="comment"># &#123;val: next greater number&#125;</span></span><br><span class="line">        s = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(nums2)-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">while</span> s <span class="keyword">and</span> s[-<span class="number">1</span>] &lt;= nums2[i]:</span><br><span class="line">                s.pop()</span><br><span class="line">            d[nums2[i]] = -<span class="number">1</span> <span class="keyword">if</span> <span class="built_in">len</span>(s) == <span class="number">0</span> <span class="keyword">else</span> s[-<span class="number">1</span>]</span><br><span class="line">            s.append(nums2[i])</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(nums1)):</span><br><span class="line">            ans[i] = d[nums1[i]]</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-element-ii/"><strong>\503. Next Greater Element II</strong></a></p>
+<blockquote>
+<p>找nums[i]的下个更大, 但是可以从元素右边找一圈一直找到元素左边 </p>
+<p><strong>循环数组 –&gt;  索引取余</strong></p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">nextGreaterElements</span>(<span class="params">self, nums: List[<span class="built_in">int</span>]</span>) -&gt; List[int]:</span></span><br><span class="line">        <span class="comment"># 单调栈+循环数组  T = k*O(n) = O(n)</span></span><br><span class="line">        <span class="comment"># 1.为了找**之后**, 所以倒着遍历</span></span><br><span class="line">        <span class="comment"># 2.为了找**第一个**比nums[i]大的元素, 所以必须增序出栈, 因此入栈必须降序.即保证栈底最大,栈顶最小,且栈单调</span></span><br><span class="line">        <span class="comment"># 3. 循环数组,利用两倍长度 + i%n做索引</span></span><br><span class="line">        </span><br><span class="line">        s = []</span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        res = [-<span class="number">1</span>] * n </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span> * n - <span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">while</span> s <span class="keyword">and</span> s[-<span class="number">1</span>] &lt;= nums[i%n]: <span class="comment"># 注意题干找大于. 因此==也要pop掉</span></span><br><span class="line">                s.pop()</span><br><span class="line">            res[i%n] = s[-<span class="number">1</span>] <span class="keyword">if</span> <span class="built_in">len</span>(s) != <span class="number">0</span> <span class="keyword">else</span> -<span class="number">1</span></span><br><span class="line">            s.append(nums[i%n])</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-node-in-linked-list/"><strong>\1019. Next Greater Node In Linked List</strong></a></p>
+<blockquote>
+<img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210814011149600.png" alt="image-20210814011149600" style="zoom:50%;" />
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"># class ListNode:</span></span><br><span class="line"><span class="comment">#     def __init__(self, val=0, next=None):</span></span><br><span class="line"><span class="comment">#         self.val = val</span></span><br><span class="line"><span class="comment">#         self.next = next</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">nextLargerNodes</span>(<span class="params">self, head: Optional[ListNode]</span>) -&gt; List[int]:</span></span><br><span class="line">        <span class="comment"># 单调栈, 多了个遍历链表读值而已  </span></span><br><span class="line">        res = []</span><br><span class="line">        <span class="keyword">while</span> head:</span><br><span class="line">            res.append(head.val)</span><br><span class="line">            head = head.<span class="built_in">next</span></span><br><span class="line">        </span><br><span class="line">        n = <span class="built_in">len</span>(res)</span><br><span class="line">        ans = [<span class="number">0</span>] * n</span><br><span class="line">        s = [] <span class="comment"># monotonic stack</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">while</span> s <span class="keyword">and</span> s[-<span class="number">1</span>] &lt;= res[i]:</span><br><span class="line">                s.pop()</span><br><span class="line">            <span class="keyword">if</span> s:</span><br><span class="line">                ans[i] = s[-<span class="number">1</span>]</span><br><span class="line">            s.append(res[i])</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="单调队列例题"><a href="#单调队列例题" class="headerlink" title="单调队列例题"></a>单调队列例题</h2><h1 id="循环数组"><a href="#循环数组" class="headerlink" title="循环数组"></a>循环数组</h1><h1 id="字典树"><a href="#字典树" class="headerlink" title="字典树"></a>字典树</h1><h1 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h1>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Carl</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2021 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>My Heart is in the <strong>WORK</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i> - from <strong>Andrew Carnegie</strong></i></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Interview-Algorithm/"># Interview - Algorithm</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/08/05/Git-Related/">Git Related</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+
+<!-- add git talk -->
+
+    <div id="gitalk-container"></div>
+    <script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script> 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '2cb4dd5456ba994168fe',
+        clientSecret: '66d8270f473a683bdc1a1ad00d6d1348b773047b',
+        repo: 'Carlwasinfected.github.io',
+        owner: 'Carlwasinfected',
+        admin: 'Carlwasinfected',
+        id: md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 15,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Carl | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a> 
+            <br>
+        
+            <!-- 增加站点统计查询 -->
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<span class="site-uv">
+    <i>Vistors:</i>
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>&nbsp;
+
+
+<span class="site-pv">
+    <i>Views:</i>
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+        </span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
