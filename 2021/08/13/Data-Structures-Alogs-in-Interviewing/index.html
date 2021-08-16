@@ -277,8 +277,19 @@
 
 
 
-
-
+<h1 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h1><p>如果<code>a --&gt; b</code>表示<code>b</code>依赖于<code>a</code>, 即<code>b</code>必须在<code>a</code>执行之后才能执行, 那么给定一个依赖序列, 可以利用拓扑排<strong>序找到满足依赖关系的节点执行顺序</strong>, 这个过程称为拓扑排序.</p>
+<blockquote>
+<p>e.g., <code>graph[0] = [0, 0, 1, 1, 0]</code> 表示2和3依赖0, 必须晚于0执行.</p>
+</blockquote>
+<p>拓扑排序有以下性质:</p>
+<p>1.拓扑排序是图<strong>后序遍历</strong>序列的<strong>reverse</strong>结果</p>
+<blockquote>
+<p>因为依赖关系的要求是必须自己所依赖的任务都执行完成后才能执行自己 </p>
+</blockquote>
+<p>2.图中不存在循环依赖. 即拓扑排序只针对<strong>有向无环图</strong>,  在DFS过程中需要对当前节点进行<strong>环检测「见下」</strong></p>
+<p><strong>判断有向图有环是否需要拓扑排序?</strong></p>
+<p>不用. 拓扑排序只是基于<strong>无环有向图</strong>前提下<strong>后序遍历的结果产物</strong>, 只判断有向图是否有环的话跟拓扑排序没关系. </p>
+<p>只是判断是否有环, <code>DFS/BFS + seen&#123;&#125; + cur_path[]</code> 就可以了</p>
 <h1 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h1><h1 id="循环数组"><a href="#循环数组" class="headerlink" title="循环数组"></a>循环数组</h1><h1 id="字典树"><a href="#字典树" class="headerlink" title="字典树"></a>字典树</h1><h1 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h1>
         </div>
 
