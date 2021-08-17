@@ -277,7 +277,13 @@
 
 
 
-<h1 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h1><p>如果<code>a --&gt; b</code>表示<code>b</code>依赖于<code>a</code>, 即<code>b</code>必须在<code>a</code>执行之后才能执行, 那么给定一个依赖序列, 可以利用拓扑排<strong>序找到满足依赖关系的节点执行顺序</strong>, 这个过程称为拓扑排序.</p>
+<h1 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h1><blockquote>
+<p>Ref:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/7nP92FhCTpTKIAplj_xWpA">https://mp.weixin.qq.com/s/7nP92FhCTpTKIAplj_xWpA</a></li>
+</ul>
+</blockquote>
+<p>如果<code>a --&gt; b</code>表示<code>b</code>依赖于<code>a</code>, 即<code>b</code>必须在<code>a</code>执行之后才能执行, 那么给定一个依赖序列, 可以利用拓扑排<strong>序找到满足依赖关系的节点执行顺序</strong>, 这个过程称为拓扑排序.</p>
 <blockquote>
 <p>e.g., <code>graph[0] = [0, 0, 1, 1, 0]</code> 表示2和3依赖0, 必须晚于0执行.</p>
 </blockquote>
@@ -290,6 +296,27 @@
 <p><strong>判断有向图有环是否需要拓扑排序?</strong></p>
 <p>不用. 拓扑排序只是基于<strong>无环有向图</strong>前提下<strong>后序遍历的结果产物</strong>, 只判断有向图是否有环的话跟拓扑排序没关系. </p>
 <p>只是判断是否有环, <code>DFS/BFS + seen&#123;&#125; + cur_path[]</code> 就可以了</p>
+<p>模版 <strong>T = O(V+E)</strong></p>
+<ol>
+<li><p>基于DFS</p>
+</li>
+<li><p>基于入度和邻接表 </p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Topological_sorting"><em>Kahn’s</em> <em>Algorithm</em></a></p>
+<ol>
+<li>构建好邻接表和入度表</li>
+<li>把所有入度为0的点加入队列<code>zero</code> </li>
+<li>如果队列不空, pop队头. 把队头加入拓扑排序的结果<code>res[]</code>  再把队头邻居的所有入度都减一「去边」, 并判断如果有入度为0的, 则加入<code>zero</code>队列</li>
+<li>重复3, 直到队列空</li>
+<li>如果<code>res</code>中原节点都在,那么这个图是可拓扑的. 输出<code>res</code></li>
+</ol>
+</blockquote>
+</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">topsort</span>():</span></span><br><span class="line">        edges = defaultdict(<span class="built_in">list</span>) <span class="comment"># &#123;node : [neighbors]&#125;</span></span><br><span class="line">        ind = defaultdict(<span class="built_in">int</span>) <span class="comment"># &#123;node : indegree&#125;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># build </span></span><br><span class="line">        <span class="keyword">for</span> to, fro <span class="keyword">in</span> prerequisites:</span><br><span class="line">            ind[to] += <span class="number">1</span></span><br><span class="line">            edges[fro].append(to)</span><br><span class="line">        </span><br><span class="line">        zero_d = deque([i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num) <span class="keyword">if</span> i <span class="keyword">not</span> <span class="keyword">in</span> ind])</span><br><span class="line">        res = []</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> zero_d:</span><br><span class="line">            cur_node = zero_d.popleft()</span><br><span class="line">            res.append(cur_node)</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">for</span> node <span class="keyword">in</span> edges[cur_node]:</span><br><span class="line">                ind[node] -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> ind[node] == <span class="number">0</span>:</span><br><span class="line">                    zero_d.append(node)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> res <span class="keyword">if</span> <span class="built_in">len</span>(res) == num <span class="keyword">else</span> []</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+
+
+
 <h1 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h1><h1 id="循环数组"><a href="#循环数组" class="headerlink" title="循环数组"></a>循环数组</h1><h1 id="字典树"><a href="#字典树" class="headerlink" title="字典树"></a>字典树</h1><h1 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h1>
         </div>
 
