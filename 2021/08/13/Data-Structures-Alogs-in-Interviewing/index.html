@@ -230,16 +230,16 @@
 <p>又因为“下一个” 代表着要在找索引比当前元素更大的区间里搜索. 所以可知以下两个特点 👇👇</p>
 <blockquote>
 <ol>
-<li>从数组结尾往前遍历</li>
+<li>从数组<strong>结尾往前遍历</strong></li>
 <li>只让比当前栈顶元素大的入栈, 如果不满足, 那么一直pop栈顶直到空</li>
+<li>由2知, stack从栈顶到栈底(s[-1] –&gt; s[0]) 是单调递增的.</li>
 </ol>
 </blockquote>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># “下一个更大元素“的模版 </span></span><br><span class="line"></span><br><span class="line">s = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(arr)-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>):<span class="comment"># from end to 0</span></span><br><span class="line">    <span class="comment"># 如果栈顶小于等于元素,就一直pop; 以此维持stack**自底向上是单调减的** </span></span><br><span class="line">    <span class="keyword">while</span> s <span class="keyword">and</span> s[-<span class="number">1</span>] &lt;= arr[i]: </span><br><span class="line">        s.pop()</span><br><span class="line">    ans[i] = s[-<span class="number">1</span>] <span class="keyword">if</span> <span class="keyword">not</span> s.empty() <span class="keyword">else</span> -<span class="number">1</span> <span class="comment"># ans[i]: 第i个元素的下一个更大元素</span></span><br><span class="line">    s.append(arr[i])</span><br></pre></td></tr></table></figure>
 
 
 
-<p><strong>单调队列</strong></p>
-<h2 id="单调栈例题"><a href="#单调栈例题" class="headerlink" title="单调栈例题"></a>单调栈例题</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-element-i/"><strong>\496. Next Greater Element I</strong></a></p>
+<h2 id="单调栈例题"><a href="#单调栈例题" class="headerlink" title="单调栈例题"></a>单调栈例题</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-element-i/"><strong>496. Next Greater Element I</strong></a></p>
 <blockquote>
 <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210814005948436.png" alt="image-20210814005948436" style="zoom:50%;" />
 
@@ -249,7 +249,7 @@
 
 
 
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-element-ii/"><strong>\503. Next Greater Element II</strong></a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-element-ii/"><strong>503. Next Greater Element II</strong></a></p>
 <blockquote>
 <p>找nums[i]的下个更大, 但是可以从元素右边找一圈一直找到元素左边 </p>
 <p><strong>循环数组 –&gt;  索引取余</strong></p>
@@ -258,7 +258,7 @@
 
 
 
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-node-in-linked-list/"><strong>\1019. Next Greater Node In Linked List</strong></a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/next-greater-node-in-linked-list/"><strong>1019. Next Greater Node In Linked List</strong></a></p>
 <blockquote>
 <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210814011149600.png" alt="image-20210814011149600" style="zoom:50%;" />
 </blockquote>
@@ -268,7 +268,7 @@
 
 
 
-<h2 id="单调队列例题"><a href="#单调队列例题" class="headerlink" title="单调队列例题"></a>单调队列例题</h2><p>用于解决滑动窗口问题. 当你需要维持一个窗口,并保证队列头到队列尾的单调性时. </p>
+<h2 id="单调队列例题-📝"><a href="#单调队列例题-📝" class="headerlink" title="单调队列例题 📝"></a>单调队列例题 📝</h2><p>用于解决滑动窗口问题. 当你需要维持一个窗口,并保证队列头到队列尾的单调性时. </p>
 <p>由于队列的FIFO特性, 因此单调队列的出栈和入栈是同向的「要么都单调递增, 要么都单调递减」 模版类似单调栈,通过比较当前元素和队头,不断pop队头直到空或者满足大小关系再加入队尾.</p>
 <p><strong><a target="_blank" rel="noopener" href="https://leetcode.com/problems/sliding-window-maximum/">Sliding Window Maximum</a></strong></p>
 <img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210816104407066.png" alt="image-20210816104407066" style="zoom:50%;" />
@@ -323,20 +323,26 @@
 </blockquote>
 <p>字典树是一种<strong>多叉搜索树</strong>,  每个节点的val是一个<code>char</code>,  从<code>root --&gt; current node</code>的路径可以表示字符串.</p>
 <p>字典树的结构如下, <strong>一般<code>root</code>不赋值, 作为占位的哨兵节点.</strong></p>
-<img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210822075903846.png" alt="image-20210822075903846" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/Carlwasinfected/hximgs@main/data/image-20210831175617535.png" alt="image-20210831175617535" style="zoom:50%;" />
 
+<p><strong>When 字典树</strong></p>
+<ul>
+<li>多个字符串的快速查询检索</li>
+<li>多个字符串的<strong>最长公共前缀</strong></li>
+<li>字符串排序 </li>
+</ul>
 <p><strong>字典树节点的数据结构</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span>:</span></span><br><span class="line">    self.children = &#123;char : node that holds the char&#125; <span class="comment"># 子节点的hash table</span></span><br><span class="line">    self.val = current char  <span class="comment"># 自己的char</span></span><br><span class="line">    self.isEnd = <span class="literal">False</span>  <span class="comment"># 是否是某个word的结尾</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>字典树的数据结构「利用DFS遍历找位置」</strong></p>
 <ul>
-<li><p><code>search()</code> </p>
+<li><p><code>search()</code>  <strong>O(n)</strong></p>
 <p>  查找是否有某个<code>word</code> ==&gt; 找到最后一个char, 若能找到,return <code>self.isEnd</code></p>
 </li>
 <li><p><code>hasStartWith() </code>  查找是否有以某个<code>string</code>为前序的<code>string</code></p>
 <p>  注意和<code>search()</code>相区别.   <strong>叶子结点一定是某个word, 但是非叶子结点不一定就不是某个word</strong> . 因此如果可以成功遍历完所有char,就<code>return True</code></p>
 </li>
-<li><p><code>insert()</code> :   插入某个<code>string</code></p>
+<li><p><code>insert()</code> :   插入某个<code>string</code>     <strong>O(n)</strong></p>
 <p>  DFS到插入点: <code>if current char does not exist</code>, 那么<code>new</code>一个新结点, 插入到当前节点的<code>children hash table</code>中</p>
 </li>
 </ul>
